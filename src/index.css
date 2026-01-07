@@ -1,0 +1,161 @@
+@import "tailwindcss";
+
+/* Syne Font */
+@font-face {
+  font-family: 'Syne';
+  src: url('/fonts/syne/Webfonts/Syne-Regular.woff2') format('woff2'),
+       url('/fonts/syne/Webfonts/Syne-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Syne';
+  src: url('/fonts/syne/Webfonts/Syne-Bold.woff2') format('woff2'),
+       url('/fonts/syne/Webfonts/Syne-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Syne';
+  src: url('/fonts/syne/Webfonts/Syne-Extra.woff2') format('woff2'),
+       url('/fonts/syne/Webfonts/Syne-Extra.woff') format('woff');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Syne';
+  src: url('/fonts/syne/Webfonts/Syne-Italic.woff2') format('woff2'),
+       url('/fonts/syne/Webfonts/Syne-Italic.woff') format('woff');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Syne Mono';
+  src: url('/fonts/syne/Webfonts/Syne-Mono.woff2') format('woff2'),
+       url('/fonts/syne/Webfonts/Syne-Mono.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --color-primary-gradient: linear-gradient(90deg, #00F5D4 0%, #7B61FF 100%);
+  --font-family-sans: 'Syne', system-ui, sans-serif;
+  --font-family-mono: 'Syne Mono', ui-monospace, monospace;
+}
+
+/* Base styles */
+html {
+  font-family: 'Syne', system-ui, sans-serif;
+}
+
+body {
+  background-color: #000;
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Primary gradient utility */
+.bg-primary-gradient {
+  background: linear-gradient(90deg, #00F5D4 0%, #7B61FF 100%);
+}
+
+.text-primary-gradient {
+  background: linear-gradient(90deg, #00F5D4 0%, #7B61FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.border-primary-gradient {
+  position: relative;
+  background: transparent;
+  border: none;
+}
+
+.border-primary-gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(90deg, #00F5D4 0%, #7B61FF 100%);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0D0D0D;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a3a;
+}
+
+/* Input number spin button removal */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Animation utilities */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 245, 212, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(0, 245, 212, 0.5);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
