@@ -69,6 +69,7 @@ export const BundleSales: React.FC<BundleSalesProps> = ({ bundles, onBuy }) => {
             <div className="flex items-center gap-3">
               <span className="text-cyan-400 font-semibold">{bundle.price} USDT</span>
             </div>
+            <Button onClick={() => onBuy(bundle.id)}>Buy</Button>
           </div>
         ))}
       </div>

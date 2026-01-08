@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Card, Button, Input } from '../ui'
+import { Card, Button } from '../ui'
 
 interface EmailNotificationProps {
   onSendEmail: (email: string) => void

@@ -61,6 +61,7 @@ export const SingleSales: React.FC<SingleSalesProps> = ({ listings, onBuy }) => 
                 <span className="text-gray-500 text-sm">—</span>
               )}
             </div>
+            <Button onClick={() => onBuy(listing.id)}>Buy</Button>
           </div>
         ))}
       </div>
