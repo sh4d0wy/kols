@@ -15,7 +15,7 @@ export const Button: React.FC<ButtonProps> = ({
   className = '',
   ...props
 }) => {
-  const baseStyles = 'font-semibold rounded-full transition-all duration-200 flex items-center justify-center gap-2'
+  const baseStyles = 'font-semibold rounded-full transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer hover:scale-105'
   
   const variantStyles = {
     primary: 'bg-primary-gradient text-[#0D0D0D] hover:opacity-90 hover:shadow-lg hover:shadow-cyan-500/20',
