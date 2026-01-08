@@ -16,10 +16,10 @@ export const StakingHeader: React.FC<StakingHeaderProps> = ({
   return (
     <div className="flex justify-between items-start mb-8 mt-8">
       <div>
-        <h1 className="text-4xl md:text-5xl font-bold text-primary-gradient italic tracking-tight mb-2">
+        <h1 className="text-4xl md:text-5xl font-bold text-primary-gradient font-syne mb-2">
           {title}
         </h1>
-        <p className="text-gray-400 text-sm">{subtitle}</p>
+        <p className="text-gray-400 text-sm font-syne-mono">{subtitle}</p>
       </div>
       
       <div className="flex items-center gap-8">

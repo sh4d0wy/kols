@@ -48,8 +48,8 @@
 
 @theme {
   --color-primary-gradient: linear-gradient(90deg, #00F5D4 0%, #7B61FF 100%);
-  --font-family-sans: 'Syne', system-ui, sans-serif;
-  --font-family-mono: 'Syne Mono', ui-monospace, monospace;
+  --font-family-syne: 'Syne', system-ui, sans-serif;
+  --font-family-syne-mono: 'Syne Mono', ui-monospace, monospace;
 }
 
 /* Base styles */

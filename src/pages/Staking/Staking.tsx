@@ -54,7 +54,7 @@ const Staking = () => {
         
         <StatsGrid />
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full mt-6">
           <WalletStateCard 
             onWithdraw={handleWithdraw}
             data={{

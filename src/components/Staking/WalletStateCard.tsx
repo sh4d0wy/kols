@@ -38,7 +38,7 @@ export const WalletStateCard: React.FC<WalletStateCardProps> = ({
   }
 
   return (
-    <Card className="p-6 h-full">
+    <Card className="p-6 h-full w-full">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xs text-gray-500 uppercase tracking-wider font-medium">My Wallet State</h3>
         <Badge variant="success">ACTIVE</Badge>
