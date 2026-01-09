@@ -3,6 +3,8 @@ import { Card } from '../ui/Card'
 import { Badge } from '../ui/Badge'
 import { StatRow } from '../ui/StatRow'
 import { Button } from '../ui/Button'
+import { useWalletStats } from '../../hooks/staking/queries/useWalletStatsQuery'
+import { useConnection } from 'wagmi'
 
 interface WalletStateData {
   isActive: boolean
@@ -36,7 +38,9 @@ export const WalletStateCard: React.FC<WalletStateCardProps> = ({
   const formatNumber = (num: number) => {
     return num.toLocaleString('en-US', { minimumFractionDigits: num % 1 !== 0 ? 2 : 0 })
   }
-
+  const connection = useConnection();
+  const { data: walletStats } = useWalletStats(connection.address ?? '');
+  console.log("walletStats", walletStats);
   return (
     <Card className="p-6 h-full w-full">
       <div className="flex justify-between items-center mb-6">

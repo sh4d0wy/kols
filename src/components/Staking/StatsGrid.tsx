@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useMemo } from 'react'
 import { StatsCard } from './StatsCard'
-import { useStakingContract } from '../../hooks/useStakingContract'
-import { formatUnits } from 'ethers/utils'
+import type { GlobalStats } from '../../types/stakingStats'
+import { useGlobalQuery } from '../../hooks/staking/queries/useGlobalQuery'
 
-// Icons as components
 const UsersIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -36,164 +35,75 @@ const RewardsIcon = () => (
   </svg>
 )
 
-interface StatsData {
-  totalStakers: number
-  activeParticipantsChange: string
-  activeKols: number
-  todayRevenue: number
-  dailyDistributionChange: string
-  yesterdayRevenue: number
-  weeklyRevenue: number
-  weeklyChange: string
-  monthlyRevenue: number
-  totalRewards: number
-  totalDistributedChange: string
-  insurancePool: number
-}
-
 interface StatsGridProps {
-  data?: StatsData
-}
-
-const defaultData: StatsData = {
-  totalStakers: 1247,
-  activeParticipantsChange: '8.4%',
-  activeKols: 71632,
-  todayRevenue: 2847,
-  dailyDistributionChange: '3.1%',
-  yesterdayRevenue: 3125,
-  weeklyRevenue: 18432,
-  weeklyChange: '12.4%',
-  monthlyRevenue: 76234,
-  totalRewards: 542891,
-  totalDistributedChange: '156.7%',
-  insurancePool: 100
+  data?: GlobalStats
 }
 
 export const StatsGrid: React.FC<StatsGridProps> = () => {
   const formatNumber = (num: number) => {
     return num.toLocaleString('en-US')
   }
-  const [globalStats, setGlobalStats] = useState<any>(defaultData);
-  const [loading, setLoading] = useState(true);
-  const { readContract } = useStakingContract();
-  const loadGlobalStats = useCallback(async () => {
-    try {
-      setLoading(true);
-      if (!readContract) return;
-      const [
-        stakerCount,
-        activeStaked,
-        today,
-        yesterday,
-        thisWeek,
-        lastWeek,
-        thisMonth,
-        lastMonth,
-        totalRewards,
-        contractUsdt,
-        insurancePool,
-        totalClaimed,
-        feeStats
-      ] = await Promise.all([
-        readContract.totalStakerCount(),
-        readContract.totalActiveStaked(),
-        readContract.todayReward(),
-        readContract.yesterdayReward(),
-        readContract.thisWeekReward(),
-        readContract.lastWeekReward(),
-        readContract.thisMonthReward(),
-        readContract.lastMonthReward(),
-        readContract.totalDistributed(),
-        readContract.contractUsdtBalance(),
-        readContract.insurancePoolBalance(),
-        readContract.totalUserClaimed(),
-        readContract.totalFeeStats()
-      ]);
+  const { data: globalStats } = useGlobalQuery();
 
-      const globalStats = {
-        stakerCount: stakerCount.toString(),
-        activeStaked: formatUnits(activeStaked, 18),
-        todayReward: formatUnits(today, 18),
-        yesterdayReward: formatUnits(yesterday, 18),
-        thisWeekReward: formatUnits(thisWeek, 18),
-        lastWeekReward: formatUnits(lastWeek, 18),
-        thisMonthReward: formatUnits(thisMonth, 18),
-        lastMonthReward: formatUnits(lastMonth, 18),
-        totalDistributed: formatUnits(totalRewards, 18),
-        contractUsdt: formatUnits(contractUsdt, 18),
-        insurancePool: formatUnits(insurancePool, 18),
-        totalClaimed: formatUnits(totalClaimed, 18),
-        feeToPool: formatUnits(feeStats[0], 18),
-        feeToInsurance: formatUnits(feeStats[1], 18)
-      };
-      setGlobalStats(globalStats);
-      setLoading(false);
-    } catch (e) {
-      console.error('loadGlobalStats error:', e);
-      setLoading(false);
-    }
-  }, [readContract]);
+  const revenueChange = useMemo(() => {
+    const difference = parseFloat(globalStats?.today??'0') - parseFloat(globalStats?.yesterday??'0');
+    const percentage = (difference / parseFloat(globalStats?.yesterday??'0')) * 100;
+    return percentage.toFixed(2) + '%';
+  }, [globalStats]);  
 
-  useEffect(() => {
-    loadGlobalStats();
-  }, [loadGlobalStats]);
+  const weeklyChange = useMemo(() => {
+    const difference = parseFloat(globalStats?.thisWeek??'0') - parseFloat(globalStats?.lastWeek??'0');
+    const percentage = (difference / parseFloat(globalStats?.lastWeek??'0')) * 100;
+    return percentage.toFixed(2) + '%';
+  }, [globalStats]);
 
-  const { totalStakers, activeStaked, todayReward, yesterdayReward, thisWeekReward, lastWeekReward, thisMonthReward, lastMonthReward, totalDistributed, contractUsdt, insurancePool, totalClaimed, feeToPool, feeToInsurance } = globalStats;
-  const activeParticipantsChange = (activeStaked - totalStakers) / totalStakers * 100;
-  const activeKols = activeStaked / 1000000;
-  const dailyDistributionChange = (todayReward - yesterdayReward) / yesterdayReward * 100;
-  const weeklyChange = (thisWeekReward - lastWeekReward) / lastWeekReward * 100;
-  const totalDistributedChange = (totalDistributed - lastMonthReward) / lastMonthReward * 100;
+ 
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <StatsCard
         title="Total Stakers"
-        mainValue={formatNumber(totalStakers??0)}
+        mainValue={formatNumber(Number(globalStats?.stakerCount??0))}
         changeLabel="Active Participants"
-        changeValue={activeParticipantsChange.toString()}
         changePositive={true}
         secondaryLabel="Active KOLS"
-        secondaryValue={formatNumber(activeKols??0)}
+        secondaryValue={formatNumber(Number(globalStats?.activeStaked??0))}
         icon={<UsersIcon />}
       />
       
       <StatsCard
         title="Today's Revenue"
-        mainValue={formatNumber(todayReward??0)}
+        mainValue={formatNumber(parseFloat(globalStats?.today??'0'))}
         mainSuffix="USDT"
         changeLabel="Daily Distribution"
-        changeValue={dailyDistributionChange.toString()}
-        changePositive={true}
+        changeValue={isNaN(parseFloat(revenueChange)) ? '0' : revenueChange}
+        changePositive={!isNaN(parseFloat(revenueChange)) && parseFloat(revenueChange) > 0}
         secondaryLabel="Yesterday"
-        secondaryValue={formatNumber(yesterdayReward??0)}
+        secondaryValue={formatNumber(parseFloat(globalStats?.yesterday??'0'))}
         secondarySuffix="USDT"
         icon={<TrendingIcon />}
       />
       
       <StatsCard
         title="Weekly Revenue"
-        mainValue={formatNumber(thisWeekReward??0)}
+        mainValue={formatNumber(parseFloat(globalStats?.thisWeek??'0'))}
         mainSuffix="USDT"
         changeLabel="This Week"
-        changeValue={weeklyChange.toString()}
-        changePositive={true}
+        changeValue={isNaN(parseFloat(weeklyChange)) ? '0' : weeklyChange}
+        changePositive={!isNaN(parseFloat(weeklyChange)) && parseFloat(weeklyChange) > 0}
         secondaryLabel="This Month"
-        secondaryValue={formatNumber(thisMonthReward??0)}
+        secondaryValue={formatNumber(parseFloat(globalStats?.thisMonth??'0'))}
         secondarySuffix="USDT"
         icon={<CalendarIcon />}
       />
       
       <StatsCard
         title="Total Rewards"
-        mainValue={formatNumber(totalDistributed??0)}
+        mainValue={formatNumber(parseFloat(globalStats?.totalRewards??'0'))}
         mainSuffix="USDT"
         changeLabel="Total Distributed"
-        changeValue={totalDistributedChange.toString()}
-        changePositive={true}
         secondaryLabel="Insurance Pool"
-        secondaryValue={formatNumber(insurancePool??0)}
+        secondaryValue={formatNumber(parseFloat(globalStats?.insurancePool??'0'))}
         secondarySuffix="USDT"
         icon={<RewardsIcon />}
       />

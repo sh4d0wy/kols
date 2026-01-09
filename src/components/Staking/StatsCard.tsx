@@ -4,9 +4,10 @@ import { Card } from '../ui/Card'
 interface StatsCardProps {
   title: string
   mainValue: string
+  mainValueColor?: string
   mainSuffix?: string
   changeLabel: string
-  changeValue: string
+  changeValue?: string
   changePositive?: boolean
   secondaryLabel: string
   secondaryValue: string
@@ -21,6 +22,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
   changeLabel,
   changeValue,
   changePositive = true,
+  mainValueColor = 'text-white',
   secondaryLabel,
   secondaryValue,
   secondarySuffix,
@@ -37,11 +39,12 @@ export const StatsCard: React.FC<StatsCardProps> = ({
       
       <div className="mb-3">
         <div className="flex items-baseline gap-2">
-          <span className="text-3xl font-bold text-white font-mono tracking-tight">{mainValue}</span>
+          <span className={`text-3xl font-bold font-mono tracking-tight ${mainValueColor}`}>{mainValue}</span>
           {mainSuffix && (
             <span className="text-xl font-semibold text-cyan-400">{mainSuffix}</span>
           )}
         </div>
+        {changeValue && (
         <div className="flex items-center gap-2 mt-1">
           <span className="text-xs text-gray-500">{changeLabel}</span>
           <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${
@@ -51,7 +54,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
           }`}>
             {changePositive ? '↑' : '↓'} {changeValue}
           </span>
-        </div>
+        </div>)}
       </div>
       
       <div className="mt-auto pt-3 border-t border-[#1a1a1a]">
