@@ -1,13 +1,13 @@
 import { WagmiProvider, createConfig, http } from "wagmi";
-import { opBNBTestnet } from "wagmi/chains";
+import { bscTestnet } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 
 const config = createConfig(
   getDefaultConfig({
-    chains: [opBNBTestnet],
+    chains: [bscTestnet],
     transports: {
-        [opBNBTestnet.id]: http(
+        [bscTestnet.id]: http(
         `https://bnb-testnet.g.alchemy.com/v2/${import.meta.env.VITE_ALCHEMY_ID}`,
       ),
     },

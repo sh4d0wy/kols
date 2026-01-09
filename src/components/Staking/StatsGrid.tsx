@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { StatsCard } from './StatsCard'
+import { useStakingContract } from '../../hooks/useStakingContract'
+import { formatUnits } from 'ethers/utils'
 
 // Icons as components
 const UsersIcon = () => (
@@ -68,59 +70,130 @@ const defaultData: StatsData = {
   insurancePool: 100
 }
 
-export const StatsGrid: React.FC<StatsGridProps> = ({ data = defaultData }) => {
+export const StatsGrid: React.FC<StatsGridProps> = () => {
   const formatNumber = (num: number) => {
     return num.toLocaleString('en-US')
   }
+  const [globalStats, setGlobalStats] = useState<any>(defaultData);
+  const [loading, setLoading] = useState(true);
+  const { readContract } = useStakingContract();
+  const loadGlobalStats = useCallback(async () => {
+    try {
+      setLoading(true);
+      if (!readContract) return;
+      const [
+        stakerCount,
+        activeStaked,
+        today,
+        yesterday,
+        thisWeek,
+        lastWeek,
+        thisMonth,
+        lastMonth,
+        totalRewards,
+        contractUsdt,
+        insurancePool,
+        totalClaimed,
+        feeStats
+      ] = await Promise.all([
+        readContract.totalStakerCount(),
+        readContract.totalActiveStaked(),
+        readContract.todayReward(),
+        readContract.yesterdayReward(),
+        readContract.thisWeekReward(),
+        readContract.lastWeekReward(),
+        readContract.thisMonthReward(),
+        readContract.lastMonthReward(),
+        readContract.totalDistributed(),
+        readContract.contractUsdtBalance(),
+        readContract.insurancePoolBalance(),
+        readContract.totalUserClaimed(),
+        readContract.totalFeeStats()
+      ]);
+
+      const globalStats = {
+        stakerCount: stakerCount.toString(),
+        activeStaked: formatUnits(activeStaked, 18),
+        todayReward: formatUnits(today, 18),
+        yesterdayReward: formatUnits(yesterday, 18),
+        thisWeekReward: formatUnits(thisWeek, 18),
+        lastWeekReward: formatUnits(lastWeek, 18),
+        thisMonthReward: formatUnits(thisMonth, 18),
+        lastMonthReward: formatUnits(lastMonth, 18),
+        totalDistributed: formatUnits(totalRewards, 18),
+        contractUsdt: formatUnits(contractUsdt, 18),
+        insurancePool: formatUnits(insurancePool, 18),
+        totalClaimed: formatUnits(totalClaimed, 18),
+        feeToPool: formatUnits(feeStats[0], 18),
+        feeToInsurance: formatUnits(feeStats[1], 18)
+      };
+      setGlobalStats(globalStats);
+      setLoading(false);
+    } catch (e) {
+      console.error('loadGlobalStats error:', e);
+      setLoading(false);
+    }
+  }, [readContract]);
+
+  useEffect(() => {
+    loadGlobalStats();
+  }, [loadGlobalStats]);
+
+  const { totalStakers, activeStaked, todayReward, yesterdayReward, thisWeekReward, lastWeekReward, thisMonthReward, lastMonthReward, totalDistributed, contractUsdt, insurancePool, totalClaimed, feeToPool, feeToInsurance } = globalStats;
+  const activeParticipantsChange = (activeStaked - totalStakers) / totalStakers * 100;
+  const activeKols = activeStaked / 1000000;
+  const dailyDistributionChange = (todayReward - yesterdayReward) / yesterdayReward * 100;
+  const weeklyChange = (thisWeekReward - lastWeekReward) / lastWeekReward * 100;
+  const totalDistributedChange = (totalDistributed - lastMonthReward) / lastMonthReward * 100;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <StatsCard
         title="Total Stakers"
-        mainValue={formatNumber(data.totalStakers)}
+        mainValue={formatNumber(totalStakers??0)}
         changeLabel="Active Participants"
-        changeValue={data.activeParticipantsChange}
+        changeValue={activeParticipantsChange.toString()}
         changePositive={true}
         secondaryLabel="Active KOLS"
-        secondaryValue={formatNumber(data.activeKols)}
+        secondaryValue={formatNumber(activeKols??0)}
         icon={<UsersIcon />}
       />
       
       <StatsCard
         title="Today's Revenue"
-        mainValue={formatNumber(data.todayRevenue)}
+        mainValue={formatNumber(todayReward??0)}
         mainSuffix="USDT"
         changeLabel="Daily Distribution"
-        changeValue={data.dailyDistributionChange}
+        changeValue={dailyDistributionChange.toString()}
         changePositive={true}
         secondaryLabel="Yesterday"
-        secondaryValue={formatNumber(data.yesterdayRevenue)}
+        secondaryValue={formatNumber(yesterdayReward??0)}
         secondarySuffix="USDT"
         icon={<TrendingIcon />}
       />
       
       <StatsCard
         title="Weekly Revenue"
-        mainValue={formatNumber(data.weeklyRevenue)}
+        mainValue={formatNumber(thisWeekReward??0)}
         mainSuffix="USDT"
         changeLabel="This Week"
-        changeValue={data.weeklyChange}
+        changeValue={weeklyChange.toString()}
         changePositive={true}
         secondaryLabel="This Month"
-        secondaryValue={formatNumber(data.monthlyRevenue)}
+        secondaryValue={formatNumber(thisMonthReward??0)}
         secondarySuffix="USDT"
         icon={<CalendarIcon />}
       />
       
       <StatsCard
         title="Total Rewards"
-        mainValue={formatNumber(data.totalRewards)}
+        mainValue={formatNumber(totalDistributed??0)}
         mainSuffix="USDT"
         changeLabel="Total Distributed"
-        changeValue={data.totalDistributedChange}
+        changeValue={totalDistributedChange.toString()}
         changePositive={true}
         secondaryLabel="Insurance Pool"
-        secondaryValue={formatNumber(data.insurancePool)}
+        secondaryValue={formatNumber(insurancePool??0)}
         secondarySuffix="USDT"
         icon={<RewardsIcon />}
       />
