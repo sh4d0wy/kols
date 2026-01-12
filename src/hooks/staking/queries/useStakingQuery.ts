@@ -37,16 +37,16 @@ export const useStakingQuery = (address: `0x${string}` | undefined) => {
               minStakeRaw,
               currentStakeRaw,
               totalPoolStakeRaw,
-              todayRewardRaw,
-              thisMonthRewardRaw,
+              lastMonthRewardRaw,
+              yesterdayRewardRaw,
             ] = await Promise.all([
               kolsContract.balanceOf(address),
               kolsContract.allowance(address, STAKING_CONTRACT_ADDRESS),
               stakingContract.minStakeAmount(),
               stakingContract.userActiveStaked(address),
               stakingContract.totalActiveStaked(),
-              stakingContract.todayReward(),
-              stakingContract.thisMonthReward(),
+              stakingContract.lastMonthReward(),
+              stakingContract.yesterdayReward(),
             ]);
     
             const userBalance = formatUnits(userBalanceRaw, 18);
@@ -58,13 +58,13 @@ export const useStakingQuery = (address: `0x${string}` | undefined) => {
             const estimatedDailyRewards = calculateEstimatedRewards(
               userBalanceRaw,
               totalPoolStakeRaw,
-              todayRewardRaw
+              yesterdayRewardRaw
             );
     
             const estimatedMonthlyRewards = calculateEstimatedRewards(
               userBalanceRaw,
               totalPoolStakeRaw,
-              thisMonthRewardRaw
+              lastMonthRewardRaw
             );
             
             return {

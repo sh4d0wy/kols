@@ -16,13 +16,6 @@ import {
 } from '../../components/Staking'
 
 const Staking = () => {
-  const handleStake = (amount: number) => {
-    console.log('Staking amount:', amount)
-  }
-
-  const handleWithdraw = () => {
-    console.log('Withdrawing rewards')
-  }
 
   const handleClaimRewards = () => {
     console.log('Claiming rewards')
@@ -48,8 +41,6 @@ const Staking = () => {
         <StakingHeader 
           title="Global Staking Overview"
           subtitle="Real-time statistics and performance metrics"
-          apy="24.5%"
-          tvl="$8.9M"
         />
         
         <StatsGrid />

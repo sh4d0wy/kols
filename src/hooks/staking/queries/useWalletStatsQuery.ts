@@ -17,7 +17,7 @@ export const useWalletStatsQuery = (address: `0x${string}` | undefined) => {
 
         const [
             activeStakeRaw,
-            totalStaked,
+            totalStakedRaw,
             withdrawableRewardsRaw,
             totalEarningsRaw,
             unstakingData,
@@ -30,9 +30,9 @@ export const useWalletStatsQuery = (address: `0x${string}` | undefined) => {
             readContract.userUnstaking(address),
             readContract.isUnstaking(address),
           ]);
-
           const activeStake = formatUnits(activeStakeRaw, 18);
-          const myShare = totalStaked >0n?((BigInt(activeStakeRaw)/BigInt(totalStaked))*100n).toString():'0.00';
+          const totalStake = formatUnits(totalStakedRaw, 18);
+          const myShare = Number(totalStake) >0?(((Number(activeStake)/Number(totalStake))*100).toFixed(2)):'0.00';
           const pendingUnstake = formatUnits(unstakingData[0], 18);
           const withdrawableRewards = formatUnits(withdrawableRewardsRaw, 18);
           const totalEarnings = formatUnits(totalEarningsRaw, 18);
@@ -48,6 +48,7 @@ export const useWalletStatsQuery = (address: `0x${string}` | undefined) => {
             isUnstaking:isUnstakingStatus,
             isActive:activeStakeRaw > 0n,
           }
+          console.log("wallet stats", stats);
           return stats;
         }
         catch(error){

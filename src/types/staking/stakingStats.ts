@@ -13,6 +13,7 @@ export interface GlobalStats {
     totalClaimed: string
     feeToPool: string
     feeToInsurance: string
+    apy:string
 }
 
 export interface WalletStats {

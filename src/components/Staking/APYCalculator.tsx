@@ -34,9 +34,7 @@ export const APYCalculator: React.FC= () => {
     return multipliers[p] || 1
   }
   const {data:globalStats} = useGlobalQuery();
-  const monthlyReward = parseFloat(globalStats?.thisMonth??'0')
-  const totalStaked = parseFloat(globalStats?.activeStaked??'0')
-  const apy = (monthlyReward/totalStaked) * 12 * 100
+  const apy = parseFloat(globalStats?.apy??'0')
   const numAmount = parseFloat(amount) || 0 
   const multiplier = getPeriodMultiplier(period)
   const estimatedRewards = Math.round(numAmount * (apy) * multiplier)

@@ -8,9 +8,9 @@ export const useGlobalQuery = () => {
     
     return useQuery({
         queryKey: ['globalStats'],
-        queryFn: async () => {
+        queryFn: async (): Promise<GlobalStats | null> => {
             if (!readContract) return null
-            const stats: GlobalStats = {
+            const stats= {
                 stakerCount: (await readContract.totalStakerCount()).toString(),
                 activeStaked: formatUnits(await readContract.totalActiveStaked(), 18),
                 today: formatUnits(await readContract.todayReward(), 18),
@@ -26,10 +26,15 @@ export const useGlobalQuery = () => {
                 feeToPool: formatUnits((await readContract.totalFeeStats())[0], 18),
                 feeToInsurance: formatUnits((await readContract.totalFeeStats())[1], 18),
             }
-            console.log("stats", stats);
-            return stats
+            const apy = (Number(stats.lastMonth)/Number(stats.activeStaked)) * 12 * 100
+            console.log("today reward", stats.thisMonth);
+            return {
+                ...stats,
+                apy: apy.toString()
+            }
             
         },
+        staleTime: 1000 * 60 * 60 * 24, 
         enabled: !!readContract,
     });
 };
