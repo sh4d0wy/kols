@@ -1,24 +1,24 @@
 import { useMemo } from 'react';
 import { Contract } from 'ethers';
 import { useEthers } from './useEthers';
-import { STAKING_CONTRACT_ADDRESS, STAKING_CONTRACT_ABI } from '../utils/stakingcontractdata';
+import { USDT_CONTRACT_ABI, USDT_CONTRACT_ADDRESS } from '@/utils/usdtData';
 
-export function useStakingContract() {
+export function useUSDTContract() {
   const { provider, signer } = useEthers();
 
   const readContract = useMemo(() => {
     if (!provider) return null;
-    return new Contract(STAKING_CONTRACT_ADDRESS, STAKING_CONTRACT_ABI, provider);
+    return new Contract(USDT_CONTRACT_ADDRESS, USDT_CONTRACT_ABI, provider);
   }, [provider]);
 
   const writeContract = useMemo(() => {
     if (!signer) return null;
-    return new Contract(STAKING_CONTRACT_ADDRESS, STAKING_CONTRACT_ABI, signer);
+        return new Contract(USDT_CONTRACT_ADDRESS, USDT_CONTRACT_ABI, signer);
   }, [signer]);
 
   return {
     readContract,
     writeContract,
-    STAKING_CONTRACT_ADDRESS
+    USDT_CONTRACT_ADDRESS
   };
 }

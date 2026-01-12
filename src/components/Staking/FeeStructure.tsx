@@ -1,26 +1,10 @@
 import React from 'react'
 import { Card } from '../ui/Card'
 import { StatRow } from '../ui/StatRow'
+import { useFeeQuery } from '@/hooks/staking/queries/useFeeQuery'
 
-interface FeeStructureData {
-  contractBalance: number
-  totalWithdrawals: number
-  redistributionFee: number
-  insuranceFee: number
-}
-
-interface FeeStructureProps {
-  data?: FeeStructureData
-}
-
-const defaultData: FeeStructureData = {
-  contractBalance: 12456,
-  totalWithdrawals: 489234,
-  redistributionFee: 9872,
-  insuranceFee: 1097
-}
-
-export const FeeStructure: React.FC<FeeStructureProps> = ({ data = defaultData }) => {
+export const FeeStructure: React.FC = () => {
+  const {data:feeStats} = useFeeQuery();
   const formatNumber = (num: number) => {
     return num.toLocaleString('en-US')
   }
@@ -34,25 +18,25 @@ export const FeeStructure: React.FC<FeeStructureProps> = ({ data = defaultData }
       <div className="space-y-3">
         <StatRow
           label="Contract USDT Balance"
-          value={formatNumber(data.contractBalance)}
+          value={formatNumber(Number(feeStats?.contractUsdtBalance || 0))}
           suffix="USDT"
           suffixColor="cyan"
         />
         <StatRow
           label="Total User Net Withdrawals"
-          value={formatNumber(data.totalWithdrawals)}
+          value={formatNumber(Number(feeStats?.totalUserNetWithdrawals || 0))}
           suffix="USDT"
           suffixColor="cyan"
         />
         <StatRow
           label="Redistribution Fee (1.8%) Total"
-          value={formatNumber(data.redistributionFee)}
+          value={formatNumber(Number(feeStats?.redistributionFee || 0))}
           suffix="USDT"
           suffixColor="cyan"
         />
         <StatRow
           label="Insurance Fee (0.2%) Total"
-          value={formatNumber(data.insuranceFee)}
+          value={formatNumber(Number(feeStats?.insuranceFee || 0))}
           suffix="USDT"
           suffixColor="cyan"
         />

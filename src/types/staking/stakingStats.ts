@@ -16,10 +16,13 @@ export interface GlobalStats {
 }
 
 export interface WalletStats {
-    activeStaked: string
-    myShare: string
-    pendingUnstake: string
-    unlockTime: string
-    withdrawableRewards: string
-    totalEarnings: string
+    activeStake: string,
+    activeStakeRaw: bigint,
+    myShare: string,
+    pendingUnstake: string,
+    withdrawableRewards: string,
+    totalEarnings: string,
+    unlockTime: number,
+    isUnstaking: boolean,
+    isActive: boolean,
 }

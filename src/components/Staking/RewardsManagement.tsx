@@ -1,6 +1,8 @@
 import React from 'react'
 import { Card } from '../ui/Card'
 import { ActionButton } from './ActionButton'
+import { useWalletStatsQuery } from '@/hooks/staking/queries/useWalletStatsQuery'
+import { useConnection } from 'wagmi'
 
 const GiftIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -55,6 +57,8 @@ export const RewardsManagement: React.FC<RewardsManagementProps> = ({
   onWithdrawUnstaked,
   onClaimAndUnstake
 }) => {
+  const connection = useConnection();
+  const { data: walletStats } = useWalletStatsQuery(connection.address);
   return (
     <Card className="p-6">
       <div className="flex justify-between items-center mb-6">
@@ -68,9 +72,10 @@ export const RewardsManagement: React.FC<RewardsManagementProps> = ({
         <ActionButton
           icon={<GiftIcon />}
           label="Claim Rewards"
-          description="Withdraw 127.84 USDT to your wallet"
+          description={`Withdraw ${walletStats?.withdrawableRewards} USDT to your wallet`}
           variant="primary"
           onClick={onClaimRewards}
+          disabled={!walletStats?.isActive}
         />
         <ActionButton
           icon={<HourglassIcon />}
@@ -78,6 +83,7 @@ export const RewardsManagement: React.FC<RewardsManagementProps> = ({
           description="Move stake into 7-day pending period"
           variant="outline"
           onClick={onRequestUnstake}
+          disabled={!walletStats?.isActive}
         />
         <ActionButton
           icon={<WalletIcon />}
@@ -85,6 +91,7 @@ export const RewardsManagement: React.FC<RewardsManagementProps> = ({
           description="Available after 7-day lockup period"
           variant="outline"
           onClick={onWithdrawUnstaked}
+          disabled={!walletStats?.isActive}
         />
         <ActionButton
           icon={<BoltIcon />}
@@ -92,6 +99,7 @@ export const RewardsManagement: React.FC<RewardsManagementProps> = ({
           description="Combined action in single transaction"
           variant="dark"
           onClick={onClaimAndUnstake}
+          disabled={!walletStats?.isActive}
         />
       </div>
     </Card>

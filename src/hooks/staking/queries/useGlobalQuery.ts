@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { useStakingContract } from "../../useStakingContract"
 import { formatUnits } from "viem";
-import type { GlobalStats } from "../../../types/stakingStats";
+import type { GlobalStats } from "../../../types/staking/stakingStats";
 
 export const useGlobalQuery = () => {
     const { readContract } = useStakingContract()

@@ -1,103 +1,70 @@
-import React from 'react'
-import { Card } from '../ui/Card'
-import { Badge } from '../ui/Badge'
-import { StatRow } from '../ui/StatRow'
-import { Button } from '../ui/Button'
-import { useWalletStats } from '../../hooks/staking/queries/useWalletStatsQuery'
+import { Card } from '@/components/ui/Card'
+import { Badge } from '@/components/ui/Badge'
+import { StatRow } from '@/components/ui/StatRow'
+import { useWalletStatsQuery } from '@/hooks/staking/queries/useWalletStatsQuery'
 import { useConnection } from 'wagmi'
 
-interface WalletStateData {
-  isActive: boolean
-  activeStake: number
-  myShare: number
-  pendingUnstake: number
-  unlockTime: string | null
-  withdrawableRewards: number
-  totalEarnings: number
-}
 
-interface WalletStateCardProps {
-  data?: WalletStateData
-  onWithdraw?: () => void
-}
 
-const defaultData: WalletStateData = {
-  isActive: true,
-  activeStake: 2450,
-  myShare: 3.42,
-  pendingUnstake: 0,
-  unlockTime: null,
-  withdrawableRewards: 127.84,
-  totalEarnings: 1456.32
-}
 
-export const WalletStateCard: React.FC<WalletStateCardProps> = ({ 
-  data = defaultData,
-  onWithdraw 
-}) => {
-  const formatNumber = (num: number) => {
-    return num.toLocaleString('en-US', { minimumFractionDigits: num % 1 !== 0 ? 2 : 0 })
-  }
+export const WalletStateCard = () => {
   const connection = useConnection();
-  const { data: walletStats } = useWalletStats(connection.address ?? '');
-  console.log("walletStats", walletStats);
+  const { data: walletStats } = useWalletStatsQuery(connection.address);
+  
   return (
     <Card className="p-6 h-full w-full">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xs text-gray-500 uppercase tracking-wider font-medium">My Wallet State</h3>
-        <Badge variant="success">ACTIVE</Badge>
+        <Badge variant={walletStats?.isActive ? 'success' : 'danger'}>{walletStats?.isActive ? 'ACTIVE' : 'INACTIVE'}</Badge>
       </div>
       
       <div className="space-y-3">
         <StatRow
           label="Active Stake"
-          value={formatNumber(data.activeStake)}
+          value={walletStats?.activeStake ?? '0'}
           suffix="KOLS"
           suffixColor="cyan"
         />
         
         <StatRow
           label="My Share"
-          value={`${data.myShare}%`}
+          value={`${walletStats?.myShare ?? '0'}%`}
           valueColor="cyan"
         />
         
         <StatRow
           label="Pending Unstake"
-          value={formatNumber(data.pendingUnstake)}
+          value={walletStats?.pendingUnstake ?? '0'}
           suffix="KOLS"
           suffixColor="cyan"
         />
         
         <div className="flex justify-between items-center py-3.5 px-4 bg-[#111111] rounded-xl">
           <span className="text-gray-400 text-sm">Unlock Time</span>
-          <span className="text-gray-500">-</span>
+          <span className="text-gray-500">{walletStats?.unlockTime ? new Date(walletStats.unlockTime * 1000).toLocaleString() : '-'}</span>
         </div>
         
         <StatRow
           label="Withdrawable Rewards"
-          value={formatNumber(data.withdrawableRewards)}
+          value={walletStats?.withdrawableRewards ?? '0'}
           suffix="USDT"
           suffixColor="cyan"
         />
         
         <StatRow
           label="Total Earnings"
-          value={formatNumber(data.totalEarnings)}
+          value={walletStats?.totalEarnings ?? '0'}
           suffix="USDT"
           suffixColor="cyan"
         />
       </div>
       
       <div className="mt-6">
-        <Button 
-          variant="secondary" 
-          fullWidth
-          onClick={onWithdraw}
-          className="bg-[#2a2a2a]/50 hover:bg-[#2a2a2a] text-gray-400"
+        <p 
+          className="text-gray-400 text-lg text-center border border-gray-500/20 rounded-full p-2"
         >
           Net amount after 2% fee (Actual amount you receive)
-        </Button>
+        </p>
       </div>
     </Card>
   )

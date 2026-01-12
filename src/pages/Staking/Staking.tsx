@@ -55,26 +55,9 @@ const Staking = () => {
         <StatsGrid />
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full mt-6">
-          <WalletStateCard 
-            onWithdraw={handleWithdraw}
-            data={{
-              isActive: true,
-              activeStake: 2450,
-              myShare: 3.42,
-              pendingUnstake: 0,
-              unlockTime: null,
-              withdrawableRewards: 127.84,
-              totalEarnings: 1456.32
-            }}
-          />
+          <WalletStateCard/>
           
-          <StakingInputCard 
-            balance={15789}
-            minStake={1000}
-            estimatedDailyRewards={2.45}
-            estimatedMonthlyRewards={73.50}
-            onStake={handleStake}
-          />
+          <StakingInputCard />
         </div>
 
         <div className="mt-6">
@@ -87,14 +70,7 @@ const Staking = () => {
         </div>
 
         <div className="mt-6">
-          <FeeStructure
-            data={{
-              contractBalance: 12456,
-              totalWithdrawals: 489234,
-              redistributionFee: 9872,
-              insuranceFee: 1097
-            }}
-          />
+          <FeeStructure/>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
@@ -103,7 +79,7 @@ const Staking = () => {
         </div>
 
         <div className="mt-6">
-          <APYCalculator apy={24.5} />
+          <APYCalculator />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">

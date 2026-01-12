@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { StatsCard } from './StatsCard'
-import type { GlobalStats } from '../../types/stakingStats'
+import type { GlobalStats } from '../../types/staking/stakingStats'
 import { useGlobalQuery } from '../../hooks/staking/queries/useGlobalQuery'
 
 const UsersIcon = () => (

@@ -1,10 +1,6 @@
 import React, { useState } from 'react'
 import { Card } from '../ui/Card'
-
-interface APYCalculatorProps {
-  apy?: number
-  onCalculate?: (amount: number, period: string) => void
-}
+import { useGlobalQuery } from '@/hooks/staking/queries/useGlobalQuery'
 
 const CalculatorIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -21,10 +17,11 @@ const CalculatorIcon = () => (
 
 const periods = ['1 Month', '3 Months', '6 Months', '1 Year', '2 Years']
 
-export const APYCalculator: React.FC<APYCalculatorProps> = ({ apy = 24.5 }) => {
+export const APYCalculator: React.FC= () => {
   const [amount, setAmount] = useState('5000')
   const [period, setPeriod] = useState('1 Year')
   const [isOpen, setIsOpen] = useState(false)
+  
 
   const getPeriodMultiplier = (p: string) => {
     const multipliers: Record<string, number> = {
@@ -36,10 +33,13 @@ export const APYCalculator: React.FC<APYCalculatorProps> = ({ apy = 24.5 }) => {
     }
     return multipliers[p] || 1
   }
-
-  const numAmount = parseFloat(amount) || 0
+  const {data:globalStats} = useGlobalQuery();
+  const monthlyReward = parseFloat(globalStats?.thisMonth??'0')
+  const totalStaked = parseFloat(globalStats?.activeStaked??'0')
+  const apy = (monthlyReward/totalStaked) * 12 * 100
+  const numAmount = parseFloat(amount) || 0 
   const multiplier = getPeriodMultiplier(period)
-  const estimatedRewards = Math.round(numAmount * (apy / 100) * multiplier)
+  const estimatedRewards = Math.round(numAmount * (apy) * multiplier)
   const totalValue = numAmount + estimatedRewards
 
   return (
@@ -96,7 +96,7 @@ export const APYCalculator: React.FC<APYCalculatorProps> = ({ apy = 24.5 }) => {
           </div>
 
           <p className="text-[10px] text-gray-600 mt-2">
-            Calculated at the current APY of {apy}%. Assuming linear rate with market conditions.
+            Calculated at the current APY of {apy.toFixed(2)}%. Assuming linear rate with market conditions.
           </p>
         </div>
 

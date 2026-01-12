@@ -13,20 +13,19 @@ export function useEthers({ chainId=bscTestnet.id }: { chainId: number } = { cha
     const network = {
       chainId: chain.id,
       name: chain.name,
-      ensAddress: chain.contracts?.ensRegistry?.address,
+      ensAddress:undefined
     };
     
     if (transport.type === 'fallback') {
-      return new JsonRpcProvider(transport.transports[0].value.url, network);
+      return new JsonRpcProvider(transport.transports[0].value.url);
     }
-    return new JsonRpcProvider(transport.url, network);
+    return new JsonRpcProvider(transport.url);
   }
   function clientToSigner(client: Client<Transport, Chain, Account>) {
     const { account, chain, transport } = client;
     const network = {
       chainId: chain.id,
       name: chain.name,
-      ensAddress: chain.contracts?.ensRegistry?.address,
     };
     const provider = new BrowserProvider(transport, network);
     return new JsonRpcSigner(provider, account.address);
