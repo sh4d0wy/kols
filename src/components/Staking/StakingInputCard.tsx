@@ -87,7 +87,13 @@ export const StakingInputCard = () => {
           <input
             type="text"
             value={amount}
-            onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Allow digits and single decimal point
+              if (/^\d*\.?\d*$/.test(value)) {
+                setAmount(value);
+              }
+            }}
             className={`w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl px-4 py-4 text-white text-2xl font-semibold font-mono focus:outline-none placeholder-gray-600  ${isStakeable ? ' focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30' : amount.length>0?'border-red-500/50':''}`}
             placeholder="0"
           />
