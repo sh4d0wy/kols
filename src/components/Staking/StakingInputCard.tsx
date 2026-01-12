@@ -6,6 +6,7 @@ import { FeatureList } from "./FeatureList";
 import { useStakingQuery } from "@/hooks/staking/queries/useStakingQuery";
 import { useConnection } from "wagmi";
 import { useStakeTokensMutation } from "@/hooks/staking/mutation/useStakeTokensMutation";
+import { ClipLoader } from "react-spinners";
 
 const ChartIcon = () => (
   <svg
@@ -39,12 +40,12 @@ export const StakingInputCard = () => {
   const connection = useConnection();
   const { data: stakingData } = useStakingQuery(connection.address);
   const { stakeTokens } = useStakeTokensMutation();
-  const [amount, setAmount] = useState(stakingData?.userKolsBalance ?? "0");
+  const [amount, setAmount] = useState(stakingData?.userKolsBalance??'');
 
   const isStakeable = useMemo(
     () =>
-      stakingData?.userKolsBalance && Number(stakingData?.userKolsBalance) > 0,
-    [stakingData?.userKolsBalance]
+      stakingData?.userKolsBalance && Number(stakingData?.userKolsBalance) > 0 && Number(amount) > 0 && Number(amount) <= Number(stakingData?.userKolsBalance) && Number(amount) >= Number(stakingData?.minStakeKOLS),
+    [stakingData?.userKolsBalance, amount]
   );
   const formatNumber = (num: number) => {
     return num.toLocaleString("en-US", {
@@ -58,7 +59,7 @@ export const StakingInputCard = () => {
 
   const handleStake = async () => {
     try {
-      const res = await stakeTokens.mutateAsync(amount.toString());
+      const res = await stakeTokens.mutateAsync(amount?.toString() ?? "0");
       if (res?.success) {
         console.log("Tokens staked successfully");
       } else {
@@ -87,7 +88,7 @@ export const StakingInputCard = () => {
             type="text"
             value={amount}
             onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
-            className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl px-4 py-4 text-white text-2xl font-semibold font-mono placeholder-gray-600 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-200 pr-36"
+            className={`w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl px-4 py-4 text-white text-2xl font-semibold font-mono focus:outline-none placeholder-gray-600  ${isStakeable ? ' focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30' : amount.length>0?'border-red-500/50':''}`}
             placeholder="0"
           />
           <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-3">
@@ -145,12 +146,13 @@ export const StakingInputCard = () => {
           fullWidth
           onClick={handleStake}
           disabled={
-            !isStakeable
+            !isStakeable || stakeTokens.isPending
           }
           className="py-4 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <LockIcon />
-          Stake Now
+          {!stakeTokens.isPending && <LockIcon />}
+          {stakeTokens.isPending && <ClipLoader color="white" size={16} loading={stakeTokens.isPending} />}
+          {stakeTokens.isPending ? 'Staking...' : 'Stake Now'}
         </Button>
       </div>
 

@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Card } from '../ui/Card'
 import { ActionButton } from './ActionButton'
 import { useWalletStatsQuery } from '@/hooks/staking/queries/useWalletStatsQuery'
 import { useConnection } from 'wagmi'
+import { useStakingContractMutations } from '@/hooks/staking/useStakingContractMutations'
 
 const GiftIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -44,21 +45,26 @@ const RewardsBadgeIcon = () => (
   </svg>
 )
 
-interface RewardsManagementProps {
-  onClaimRewards?: () => void
-  onRequestUnstake?: () => void
-  onWithdrawUnstaked?: () => void
-  onClaimAndUnstake?: () => void
-}
-
-export const RewardsManagement: React.FC<RewardsManagementProps> = ({
-  onClaimRewards,
-  onRequestUnstake,
-  onWithdrawUnstaked,
-  onClaimAndUnstake
-}) => {
+export const RewardsManagement: React.FC = () => {
   const connection = useConnection();
   const { data: walletStats } = useWalletStatsQuery(connection.address);
+  const { claimRewards, requestUnstake, withdrawUnstaked, claimAndUnstake } = useStakingContractMutations();
+
+  const isClaimable = useMemo(() => {
+    return walletStats?.isActive && Number(walletStats?.withdrawableRewards) > 0;
+  }, [walletStats]);
+
+  const isRequestable = useMemo(() => {
+    return walletStats?.isActive && Number(walletStats?.activeStake) > 0 && !walletStats?.isUnstaking;
+  }, [walletStats]);
+
+  const isWithdrawable = useMemo(() => {
+    return walletStats?.isActive && Number(walletStats?.pendingUnstake) > 0 && !walletStats?.isUnstaking && ((walletStats?.unlockTime ?? 0) < Date.now()/1000);
+  }, [walletStats]);
+  
+  const isClaimableAndUnstakable = useMemo(() => {
+    return isClaimable && Number(walletStats?.pendingUnstake) > 0 && !walletStats?.isUnstaking && ((walletStats?.unlockTime ?? 0) >= Date.now()/1000);
+  }, [walletStats]);
   return (
     <Card className="p-6">
       <div className="flex justify-between items-center mb-6">
@@ -74,32 +80,32 @@ export const RewardsManagement: React.FC<RewardsManagementProps> = ({
           label="Claim Rewards"
           description={`Withdraw ${walletStats?.withdrawableRewards} USDT to your wallet`}
           variant="primary"
-          onClick={onClaimRewards}
-          disabled={!walletStats?.isActive}
+          onClick={() => claimRewards.mutateAsync()}
+          disabled={claimRewards.isPending || !isClaimable}
         />
         <ActionButton
           icon={<HourglassIcon />}
           label="Request Unstake"
           description="Move stake into 7-day pending period"
           variant="outline"
-          onClick={onRequestUnstake}
-          disabled={!walletStats?.isActive}
+          onClick={() => requestUnstake.mutateAsync()}
+          disabled={requestUnstake.isPending || !isRequestable}
         />
         <ActionButton
           icon={<WalletIcon />}
           label="Withdraw Unstaked"
           description="Available after 7-day lockup period"
           variant="outline"
-          onClick={onWithdrawUnstaked}
-          disabled={!walletStats?.isActive}
+          onClick={() => withdrawUnstaked.mutateAsync()}
+          disabled={withdrawUnstaked.isPending || !isWithdrawable}
         />
         <ActionButton
           icon={<BoltIcon />}
           label="Claim + Unstake"
           description="Combined action in single transaction"
           variant="dark"
-          onClick={onClaimAndUnstake}
-          disabled={!walletStats?.isActive}
+          onClick={() => claimAndUnstake.mutateAsync()}
+          disabled={claimAndUnstake.isPending || !isClaimableAndUnstakable}
         />
       </div>
     </Card>

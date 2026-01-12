@@ -25,6 +25,8 @@ export const useGlobalQuery = () => {
                 totalClaimed: formatUnits(await readContract.totalUserClaimed(), 18),
                 feeToPool: formatUnits((await readContract.totalFeeStats())[0], 18),
                 feeToInsurance: formatUnits((await readContract.totalFeeStats())[1], 18),
+                feeRate: formatUnits((await readContract.feeRate())[0], 18),
+                feeDenominator: formatUnits((await readContract.feeRate())[1], 18),
             }
             const apy = (Number(stats.lastMonth)/Number(stats.activeStaked)) * 12 * 100
             console.log("today reward", stats.thisMonth);

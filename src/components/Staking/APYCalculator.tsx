@@ -35,10 +35,10 @@ export const APYCalculator: React.FC= () => {
   }
   const {data:globalStats} = useGlobalQuery();
   const apy = parseFloat(globalStats?.apy??'0')
-  const numAmount = parseFloat(amount) || 0 
+  const numAmount =  parseFloat(amount) || 0  // TODO: Fetch current price of KOLS from the API and update according to amount
   const multiplier = getPeriodMultiplier(period)
-  const estimatedRewards = Math.round(numAmount * (apy) * multiplier)
-  const totalValue = numAmount + estimatedRewards
+  const estimatedRewards = Math.round(numAmount * (apy / 100) * multiplier)
+  const totalValue =  estimatedRewards // numAmount + estimatedRewards
 
   return (
     <Card className="p-6">
@@ -99,12 +99,12 @@ export const APYCalculator: React.FC= () => {
         </div>
 
         <div className="space-y-4">
-          <div className="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/20 rounded-xl p-5">
+          <div className="bg-linear-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/20 rounded-xl p-5">
             <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Estimated Rewards</p>
             <p className="text-3xl font-bold text-cyan-400 font-mono">{estimatedRewards.toLocaleString()} <span className="text-xl">USDT</span></p>
           </div>
 
-          <div className="bg-gradient-to-r from-purple-500/10 to-cyan-500/10 border border-purple-500/20 rounded-xl p-5">
+          <div className="bg-linear-to-r from-purple-500/10 to-cyan-500/10 border border-purple-500/20 rounded-xl p-5">
             <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Total Value After Period</p>
             <p className="text-3xl font-bold text-cyan-400 font-mono">{totalValue.toLocaleString()} <span className="text-xl">USDT</span></p>
           </div>

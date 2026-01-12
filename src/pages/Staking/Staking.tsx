@@ -75,11 +75,7 @@ const Staking = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
           <StakingProgress
-            data={{
-              poolUtilization: 67.3,
-              yourContribution: 3.42,
-              rewardRate: 24.5
-            }}
+           
           />
           <NetworkStats
             data={{

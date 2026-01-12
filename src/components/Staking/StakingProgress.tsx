@@ -1,42 +1,43 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Card } from '../ui/Card'
 import { ProgressBar } from './ProgressBar'
+import { useGlobalQuery } from '@/hooks/staking/queries/useGlobalQuery'
+import { useWalletStatsQuery } from '@/hooks/staking/queries/useWalletStatsQuery'
+import { useConnection } from 'wagmi'
 
-interface StakingProgressData {
-  poolUtilization: number
-  yourContribution: number
-  rewardRate: number
-}
 
-interface StakingProgressProps {
-  data?: StakingProgressData
-}
+export const StakingProgress: React.FC= () => {
+  const connection = useConnection();
+  const {data:globalStats} = useGlobalQuery();
+  const {data:walletStats} = useWalletStatsQuery(connection.address);
 
-const defaultData: StakingProgressData = {
-  poolUtilization: 67.3,
-  yourContribution: 3.42,
-  rewardRate: 24.5
-}
-
-export const StakingProgress: React.FC<StakingProgressProps> = ({ data = defaultData }) => {
+  const poolUtilization = useMemo(() => {
+    return Number((Number(globalStats?.totalClaimed??0) / Number(globalStats?.totalRewards??0))*100).toFixed(2);
+  }, [globalStats]);
+  const yourContribution = useMemo(() => {
+    return (Number(walletStats?.myShare??0)).toFixed(2);
+  }, [walletStats]);
+  const rewardRate = useMemo(() => {
+    return (Number(globalStats?.apy??0)).toFixed(2) ;
+  }, [globalStats]);
   return (
     <Card className="p-6 h-full">
-      <h3 className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-6">Staking Progress</h3>
+      <h3 className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-6">Staking Overview</h3>
       
       <div className="space-y-6">
         <ProgressBar
-          label="Pool Utilization"
-          value={data.poolUtilization}
+          label="Total Rewards Claimed"
+          value={Number(poolUtilization)}
           color="cyan"
         />
         <ProgressBar
-          label="Your Contribution"
-          value={data.yourContribution}
+          label="Your Stake Contribution"
+          value={Number(yourContribution)}
           color="purple"
         />
         <ProgressBar
           label="Reward Rate"
-          value={data.rewardRate}
+          value={Number(rewardRate)}
           color="gradient"
         />
       </div>

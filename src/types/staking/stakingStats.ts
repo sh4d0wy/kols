@@ -13,6 +13,8 @@ export interface GlobalStats {
     totalClaimed: string
     feeToPool: string
     feeToInsurance: string
+    feeRate: string
+    feeDenominator: string
     apy:string
 }
 
