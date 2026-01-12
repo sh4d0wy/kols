@@ -29,7 +29,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
         onClick={onClick}
         disabled={disabled}
         className={`
-          flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200
+          flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 cursor-pointer
           ${variantStyles[variant]}
         `}
       >

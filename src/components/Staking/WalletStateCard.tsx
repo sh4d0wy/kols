@@ -41,7 +41,7 @@ export const WalletStateCard = () => {
         
         <div className="flex justify-between items-center py-3.5 px-4 bg-[#111111] rounded-xl">
           <span className="text-gray-400 text-sm">Unlock Time</span>
-          <span className="text-gray-500">{walletStats?.unlockTime ? new Date(walletStats.unlockTime * 1000).toLocaleString() : '-'}</span>
+          <span className="text-cyan-400">{walletStats?.unlockTime ? new Date(walletStats.unlockTime * 1000).toLocaleString() : '-'}</span>
         </div>
         
         <StatRow

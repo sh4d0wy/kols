@@ -3,25 +3,9 @@ import { Card } from '../ui/Card'
 import { StatRow } from '../ui/StatRow'
 import { useGlobalQuery } from '@/hooks/staking/queries/useGlobalQuery'
 
-interface NetworkStatsData {
-  totalStakedValue: string
-  volume24h: string
-  averageStake: string
-  networkFee: string
-}
 
-interface NetworkStatsProps {
-  data?: NetworkStatsData
-}
 
-const defaultData: NetworkStatsData = {
-  totalStakedValue: '$8.9M',
-  volume24h: '$234.5K',
-  averageStake: '57.4 KOLS',
-  networkFee: '2.0%'
-}
-
-export const NetworkStats: React.FC<NetworkStatsProps> = ({ data = defaultData }) => {
+export const NetworkStats: React.FC = () => {
   const {data:globalStats} = useGlobalQuery();
   const totalStakedValue = useMemo(() => {
     return (Number(globalStats?.activeStaked??0)).toFixed(2) + ' KOLS';
