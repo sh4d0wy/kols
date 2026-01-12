@@ -7,6 +7,7 @@ import { useStakingQuery } from "@/hooks/staking/queries/useStakingQuery";
 import { useConnection } from "wagmi";
 import { useStakeTokensMutation } from "@/hooks/staking/mutation/useStakeTokensMutation";
 import { ClipLoader } from "react-spinners";
+import { ConnectKitButton } from "connectkit";
 
 const ChartIcon = () => (
   <svg
@@ -146,20 +147,40 @@ export const StakingInputCard = () => {
 
       {/* Stake Button */}
       <div className="mt-6">
-        <Button
-          variant="primary"
-          size="lg"
-          fullWidth
-          onClick={handleStake}
-          disabled={
-            !isStakeable || stakeTokens.isPending
-          }
-          className="py-4 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {!stakeTokens.isPending && <LockIcon />}
-          {stakeTokens.isPending && <ClipLoader color="white" size={16} loading={stakeTokens.isPending} />}
-          {stakeTokens.isPending ? 'Staking...' : 'Stake Now'}
-        </Button>
+        {
+          connection.address ?(
+            <Button
+            variant="primary"
+            size="lg"
+            fullWidth
+            onClick={handleStake}
+            disabled={
+              !isStakeable || stakeTokens.isPending
+            }
+            className="py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {!stakeTokens.isPending && <LockIcon />}
+            {stakeTokens.isPending && <ClipLoader color="white" size={16} loading={stakeTokens.isPending} />}
+            {stakeTokens.isPending ? 'Staking...' : 'Stake Now'}
+          </Button>
+          ):(
+            <ConnectKitButton.Custom>
+              {({ isConnecting, show }) => (
+                <Button
+                  variant="primary"
+                  size="lg"
+                  fullWidth
+                  onClick={show}
+                  disabled={isConnecting}
+                  className="py-4"
+                >
+                  {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+                </Button>
+              )}
+            </ConnectKitButton.Custom>
+          )
+        }
+      
       </div>
 
       {/* Features */}
