@@ -13,13 +13,12 @@ export function useEthers({ chainId=bscTestnet.id }: { chainId: number } = { cha
     const network = {
       chainId: chain.id,
       name: chain.name,
-      ensAddress:undefined
     };
     
     if (transport.type === 'fallback') {
-      return new JsonRpcProvider(transport.transports[0].value.url);
+      return new JsonRpcProvider(transport.transports[0].value.url, network);
     }
-    return new JsonRpcProvider(transport.url);
+    return new JsonRpcProvider(transport.url, network);
   }
   function clientToSigner(client: Client<Transport, Chain, Account>) {
     const { account, chain, transport } = client;

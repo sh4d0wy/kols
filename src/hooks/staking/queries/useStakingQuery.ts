@@ -6,7 +6,6 @@ import type { StakingInputData } from "@/types/staking/stakingInput";
 import { STAKING_CONTRACT_ADDRESS } from "@/utils/stakingcontractdata";
 import { formatUnits } from "ethers"; 
 import { isAddress } from "viem";
-import { useBalance } from "wagmi";
 
 export const useStakingQuery = (address: `0x${string}` | undefined) => {
     const { readContract:stakingContract } = useStakingContract();

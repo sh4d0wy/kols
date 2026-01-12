@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Card } from "../ui/Card";
 import { Button } from "../ui/Button";
 import { StatRow } from "../ui/StatRow";
