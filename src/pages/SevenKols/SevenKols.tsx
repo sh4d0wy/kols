@@ -61,36 +61,15 @@ const SevenKols = () => {
         </div>
 
         <div className="mt-6">
-          <MyStructureInfo
-            data={{
-              remainingAmount: 245.67,
-              totalStructAmount: 3456.89,
-              totalJoinedDay: 28,
-              totalWithdrawnDay: 1234.56,
-            }}
-          />
+          <MyStructureInfo/>
         </div>
 
         <div className="mt-6">
-          <GlobalStatistics
-            data={{
-              totalJoinedWallets: 2847,
-              totalDeposited: 287456.34,
-              sentToTreasury: 145678.90,
-              accumulatedFee: 5749.12,
-              withdrawnFee: 3287.45,
-            }}
-          />
+          <GlobalStatistics/>
         </div>
 
         <div className="mt-6">
-          <AddressInfo
-            addresses={{
-              usdtToken: '0xVault...1F28',
-              treasury: '0xUSP2...3502',
-              feeWallet: '0xYS07...1890',
-            }}
-          />
+          <AddressInfo/>
         </div>
 
         <div className="mt-6">

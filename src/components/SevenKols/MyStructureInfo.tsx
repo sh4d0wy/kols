@@ -1,44 +1,35 @@
 import React from 'react'
 import { Card } from '../ui'
-
-interface MyStructureInfoData {
-  remainingAmount: number
-  totalStructAmount: number
-  totalJoinedDay: number
-  totalWithdrawnDay: number
-}
-
-interface MyStructureInfoProps {
-  data: MyStructureInfoData
-}
+import use7KolsUserQuery from '@/hooks/7kols/use7kolsUserQuery'
 
 const formatNumber = (num: number) => {
   return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
-export const MyStructureInfo: React.FC<MyStructureInfoProps> = ({ data }) => {
+export const MyStructureInfo: React.FC = () => {
+  const {data: userData} = use7KolsUserQuery();
   const stats = [
     {
       label: 'REMAINING AMOUNT',
-      value: formatNumber(data.remainingAmount),
+      value: formatNumber(Number(userData?.pendingReward)),
       suffix: 'UST',
       hasInfo: true,
     },
     {
       label: 'TOTAL STRUCT AMOUNT',
-      value: formatNumber(data.totalStructAmount),
+      value: formatNumber(Number(userData?.totalEarned)),
       suffix: 'UST',
       hasInfo: true,
     },
     {
-      label: 'TOTAL JOINED DAY',
-      value: data.totalJoinedDay.toString(),
+      label: 'TOTAL JOINED USDT',
+      value: formatNumber(Number(userData?.totalDeposited)),
       suffix: '',
       hasInfo: true,
     },
     {
       label: 'TOTAL WITHDRAWN DAY',
-      value: formatNumber(data.totalWithdrawnDay),
+      value: formatNumber(Number(userData?.totalWithdrawn)),
       suffix: 'UST',
       hasInfo: true,
     },
@@ -47,7 +38,7 @@ export const MyStructureInfo: React.FC<MyStructureInfoProps> = ({ data }) => {
   return (
     <Card className="p-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-xl bg-linear-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M18 20V10" stroke="#00F5D4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             <path d="M12 20V4" stroke="#00F5D4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -64,7 +55,7 @@ export const MyStructureInfo: React.FC<MyStructureInfoProps> = ({ data }) => {
         {stats.map((stat, index) => (
           <div 
             key={index}
-            className="bg-gradient-to-br from-[#0a1a1a] to-[#0d1520] border border-cyan-500/20 rounded-xl p-4"
+            className="bg-linear-to-br from-[#0a1a1a] to-[#0d1520] border border-cyan-500/20 rounded-xl p-4"
           >
             <div className="flex items-center gap-1 mb-2">
               <span className="text-gray-500 text-xs uppercase tracking-wider">{stat.label}</span>

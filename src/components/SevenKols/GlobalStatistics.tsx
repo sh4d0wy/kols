@@ -1,17 +1,6 @@
 import React from 'react'
 import { Card } from '../ui'
-
-interface GlobalStatisticsData {
-  totalJoinedWallets: number
-  totalDeposited: number
-  sentToTreasury: number
-  accumulatedFee: number
-  withdrawnFee: number
-}
-
-interface GlobalStatisticsProps {
-  data: GlobalStatisticsData
-}
+import use7KolsGlobalStats from '@/hooks/7kols/use7KolsGlobalStats'
 
 const formatNumber = (num: number) => {
   return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -21,39 +10,40 @@ const formatWholeNumber = (num: number) => {
   return num.toLocaleString('en-US')
 }
 
-export const GlobalStatistics: React.FC<GlobalStatisticsProps> = ({ data }) => {
+export const GlobalStatistics: React.FC = () => {
+  const {data: globalData} = use7KolsGlobalStats();
   const stats = [
     {
       label: 'Total joined wallets',
-      value: formatWholeNumber(data.totalJoinedWallets),
+      value: formatWholeNumber(globalData?.totalUsers??0),
       suffix: '',
     },
     {
       label: 'Total deposited (USDT)',
-      value: formatNumber(data.totalDeposited),
+      value: formatNumber(Number(globalData?.totalDeposited??0)),
       suffix: 'USDT',
     },
     {
       label: 'Sent to Treasury',
-      value: formatNumber(data.sentToTreasury),
+      value: formatNumber(Number(globalData?.totalSentToTreasury??0)),
       suffix: 'USDT',
     },
     {
       label: 'Accumulated fee',
-      value: formatNumber(data.accumulatedFee),
+      value: formatNumber(Number(globalData?.totalFeeAmount??0)),
       suffix: 'USDT',
     },
     {
-      label: 'Withdrawn fee',
-      value: formatNumber(data.withdrawnFee),
-      suffix: 'USDT',
+      label: 'Last joined user',
+      value: (globalData?.lastJoinedUser??'').slice(0, 6) + '...' + (globalData?.lastJoinedUser??'').slice(-4),
+      suffix: '',
     },
   ]
 
   return (
     <Card className="p-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-cyan-500/20 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-xl bg-linear-to-br from-purple-500/20 to-cyan-500/20 flex items-center justify-center">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="3" y="3" width="7" height="7" rx="1" stroke="#7B61FF" strokeWidth="2"/>
             <rect x="14" y="3" width="7" height="7" rx="1" stroke="#7B61FF" strokeWidth="2"/>

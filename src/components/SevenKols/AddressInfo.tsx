@@ -1,18 +1,11 @@
 import React, { useState } from 'react'
 import { Card } from '../ui'
-
-interface AddressInfoProps {
-  addresses: {
-    usdtToken: string
-    treasury: string
-    feeWallet: string
-  }
-}
+import { useGetAddressQuery } from '@/hooks/7kols/useGetAddressQuery'
 
 const AddressRow: React.FC<{ label: string; address: string; color: 'cyan' | 'purple' | 'green' }> = ({ 
   label, 
   address, 
-  color 
+  color   
 }) => {
   const [copied, setCopied] = useState(false)
 
@@ -21,7 +14,10 @@ const AddressRow: React.FC<{ label: string; address: string; color: 'cyan' | 'pu
     purple: 'text-purple-400',
     green: 'text-emerald-400',
   }
-
+  const truncateAddress = (addr: string) => {
+    if (addr.length <= 14) return addr
+    return `${addr.slice(0, 6)}...${addr.slice(-4)}`
+  }
   const handleCopy = () => {
     navigator.clipboard.writeText(address)
     setCopied(true)
@@ -32,7 +28,7 @@ const AddressRow: React.FC<{ label: string; address: string; color: 'cyan' | 'pu
     <div className="flex justify-between items-center py-3.5 px-4 bg-[#111111] rounded-xl">
       <span className="text-gray-400 text-sm">{label}</span>
       <div className="flex items-center gap-2">
-        <span className={`font-mono text-sm ${colorStyles[color]}`}>{address}</span>
+        <span className={`font-mono text-sm ${colorStyles[color]}`}>{truncateAddress(address)}</span>
         <button 
           onClick={handleCopy}
           className="p-1.5 hover:bg-white/5 rounded-lg transition-colors"
@@ -54,7 +50,8 @@ const AddressRow: React.FC<{ label: string; address: string; color: 'cyan' | 'pu
   )
 }
 
-export const AddressInfo: React.FC<AddressInfoProps> = ({ addresses }) => {
+export const AddressInfo: React.FC = () => {
+  const {data: addressInfo} = useGetAddressQuery();
   return (
     <Card className="p-6">
       <h3 className="text-white font-semibold text-lg mb-4">
@@ -62,9 +59,9 @@ export const AddressInfo: React.FC<AddressInfoProps> = ({ addresses }) => {
       </h3>
 
       <div className="space-y-2">
-        <AddressRow label="USDT Token" address={addresses.usdtToken} color="cyan" />
-        <AddressRow label="Treasury" address={addresses.treasury} color="purple" />
-        <AddressRow label="Fee wallet" address={addresses.feeWallet} color="green" />
+        <AddressRow label="USDT Token" address={addressInfo?.usdtToken??''} color="cyan" />
+        <AddressRow label="Treasury" address={addressInfo?.treasuryWallet??''} color="purple" />
+        <AddressRow label="Fee wallet" address={addressInfo?.feeWallet??''} color="green" />
       </div>
     </Card>
   )
