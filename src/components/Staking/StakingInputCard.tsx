@@ -42,7 +42,7 @@ export const StakingInputCard = () => {
   const { data: stakingData } = useStakingQuery(connection.address);
   const { stakeTokens } = useStakeTokensMutation();
   const [amount, setAmount] = useState(stakingData?.userKolsBalance??'');
-
+  
   const isStakeable = useMemo(
     () =>
       stakingData?.userKolsBalance && Number(stakingData?.userKolsBalance) > 0 && Number(amount) > 0 && Number(amount) <= Number(stakingData?.userKolsBalance) && Number(amount) >= Number(stakingData?.minStakeKOLS),

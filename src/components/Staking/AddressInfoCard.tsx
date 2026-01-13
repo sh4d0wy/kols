@@ -59,7 +59,7 @@ import { STAKING_CONTRACT_ADDRESS } from "@/utils/stakingcontractdata";
     return (
       <Card className="p-6 h-full">
         <h3 className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-6">
-          Address Info - USDT / Treasury / Fee Wallet
+          Address Info - USDT / KOLS / Staking Contract
         </h3>
   
         <div className="space-y-3">

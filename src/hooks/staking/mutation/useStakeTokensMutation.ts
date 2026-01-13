@@ -5,6 +5,8 @@ import { useStakingQuery } from '@/hooks/staking/queries/useStakingQuery';
 import { useConnection } from "wagmi";
 import { useKolsMutation } from "@/hooks/useKolsMutations";
 import { useStakingContractMutations } from "@/hooks/staking/useStakingContractMutations";
+import { toast } from "react-toastify";
+import { useWalletStatsQuery } from "@/hooks/staking/queries/useWalletStatsQuery";
 
 export const useStakeTokensMutation = () => {
     const connection = useConnection();
@@ -12,7 +14,7 @@ export const useStakeTokensMutation = () => {
     const {approveKols} = useKolsMutation();
     const {stakeKols} = useStakingContractMutations();
     const {data: stakingData} = useStakingQuery(connection.address ?? '0x0000000000000000000000000000000000000001');
-    
+    const {data: walletStats} = useWalletStatsQuery(connection.address);
     const stakeTokens = useMutation({
         mutationFn: async (amount: string) => {
             try{
@@ -23,6 +25,9 @@ export const useStakeTokensMutation = () => {
                 };
                 if(Number(amount) > Number(stakingData?.userKolsBalance ?? 0)) {
                     throw new Error('Amount must be less than user balance');
+                }
+                if(Number(walletStats?.pendingUnstake) > 0) {
+                    throw new Error('Cannot stake while unstaking');
                 }
             //fetch allowance
             const allowance = stakingData?.allowanceKOLS ?? 0n;
@@ -48,6 +53,7 @@ export const useStakeTokensMutation = () => {
         },
         onError: (error) => {
             console.error(error);
+            toast.error(error?.message ?? 'Failed to stake tokens');
         },
     });
     return {
