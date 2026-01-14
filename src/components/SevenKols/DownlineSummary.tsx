@@ -49,18 +49,14 @@ export const DownlineSummary: React.FC = () => {
 
 
   const handleRefresh = () => {
-    console.log("handleRefresh")
     downlineTreeQuery.refetch()
-    console.log("downlineTreeQuery.loading", downlineTreeQuery.isLoading)
     allLevelsRevenueQuery.refetch()
-    console.log("allLevelsRevenueQuery.loading", allLevelsRevenueQuery.isLoading)
   }
 
   const isLoading = useMemo(()=>{
-    return downlineTreeQuery.isLoading || allLevelsRevenueQuery.isLoading
-  }, [downlineTreeQuery.isLoading, allLevelsRevenueQuery.isLoading])
+    return downlineTreeQuery.isFetching || allLevelsRevenueQuery.isFetching
+  }, [downlineTreeQuery.isFetching, allLevelsRevenueQuery.isFetching])
 
-  console.log("isLoading", isLoading)
   return (
     <Card className="p-6">
       <div className="flex items-center gap-3 mb-4">
@@ -109,7 +105,7 @@ export const DownlineSummary: React.FC = () => {
         >
           Real Time (contract)
         </button>
-        <Button onClick={handleRefresh} className="flex-1 disabled:opacity-50" disabled={isLoading}>
+        <Button onClick={handleRefresh} className="flex-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100" disabled={isLoading}>
           {isLoading ? 'Loading...' : 'Refresh (fetch)'}
         </Button>
       </div>

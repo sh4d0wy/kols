@@ -47,13 +47,7 @@ const SevenKols = () => {
             onSendEmail={handleSendEmail}
             onDelete={handleDeleteEmail}
           />
-          <JoinStructure
-            claimableStructureLevel={0}
-            onJoin={handleJoin}
-            onCopyInviteLink={handleCopyInviteLink}
-            onLoadLastJoinedUser={handleLoadLastJoinedUser}
-            onResetReferrer={handleResetReferrer}
-          />
+          <JoinStructure />
         </div>
 
         <div className="mt-6">
