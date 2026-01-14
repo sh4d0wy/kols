@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { formatUnits, parseUnits } from "ethers";
+import { formatUnits, parseUnits, ZeroAddress } from "ethers";
 import { use7KolsContract } from "@/hooks/use7KolsContract";
-import { ZeroAddress } from "ethers";
 import type { LevelRevenue, TreeNode } from "@/types/7kols/downlineData";
+import type { Contract } from "ethers";
 
-async function buildRealTreeAllLevels(startAddress: string, maxDepth = 6) {
-  const { readContract: contract } = use7KolsContract();
+// Helper function to build tree recursively
+async function buildRealTreeAllLevels(contract: Contract, startAddress: string, maxDepth = 6) {
   if (!contract) return null;
   const root: TreeNode = { addr: startAddress, depth: 0, children: [] };
   const lm: Record<number, TreeNode[]> = {
@@ -53,29 +53,35 @@ async function buildRealTreeAllLevels(startAddress: string, maxDepth = 6) {
 }
 
 export const useDownlineData = () => {
+  const { readContract: contract } = use7KolsContract();
+
   const getTotalDownlineCount = (userAddress: string) => {
-    const { readContract: contract } = use7KolsContract();
-    if (!contract) return null;
     return useQuery({
       queryKey: ["totalDownlineCount", userAddress],
       queryFn: async () => {
-        if (!userAddress) return 0;
-        const count = await contract.getDownlineCount(userAddress);
-        return Number(count);
+        if (!userAddress || !contract) return 0;
+        try {
+          // downlineCount is at index 5 in the users struct
+          const userInfo = await contract.users(userAddress);
+          const downlineCount = userInfo[5];
+          console.log("downlineCount from users():", downlineCount);
+          return Number(downlineCount);
+        } catch (error) {
+          console.error("Error fetching downlineCount:", error);
+          return 0;
+        }
       },
       enabled: !!contract && !!userAddress,
       staleTime: 30000,
     });
   };
 
-  const getDownlineTree = (userAddress: string, enabled = false) => {
-    const { readContract: contract } = use7KolsContract();
-    if (!contract) return null;
+  const getDownlineTree = (userAddress: string) => {
     return useQuery({
       queryKey: ["downlineTree", userAddress],
       queryFn: async () => {
-        if (!userAddress) return null;
-        const result = await buildRealTreeAllLevels(userAddress, 6);
+        if (!userAddress || !contract) return null;
+        const result = await buildRealTreeAllLevels(contract, userAddress, 6);
         if (!result) return null;
         const { root, lm } = result;
 
@@ -92,7 +98,7 @@ export const useDownlineData = () => {
           },
         };
       },
-      enabled: enabled && !!contract && !!userAddress,
+      enabled: !!contract && !!userAddress,
       staleTime: 60000,
     });
   };
@@ -102,12 +108,10 @@ export const useDownlineData = () => {
     level: number,
     levelAddresses: string[]
   ) => {
-    const { readContract: contract } = use7KolsContract();
-    if (!contract) return null;
     return useQuery({
       queryKey: ["levelRevenue", userAddress, level, levelAddresses.length],
       queryFn: async () => {
-        if (!userAddress || !levelAddresses.length) {
+        if (!userAddress || !levelAddresses.length || !contract) {
           return {
             level,
             activeMembers: 0,
@@ -123,13 +127,16 @@ export const useDownlineData = () => {
           try {
             const userInfo = await contract.users(memberAddress);
 
-            if (userInfo.registered) {
+            // userInfo[6] is the 'registered' boolean
+            if (userInfo[6]) {
               activeCount++;
             }
 
-            const deposits = userInfo.totalDeposited;
-            const timesDeposited = deposits.div(parseUnits("7", 18));
-            const revenueFromThis = timesDeposited.mul(parseUnits("1", 18));
+            // userInfo[1] is 'totalDeposited'
+            const deposits = BigInt(userInfo[1]);
+            const depositUnit = parseUnits("7", 18);
+            const timesDeposited = deposits / depositUnit;
+            const revenueFromThis = timesDeposited * parseUnits("1", 18);
 
             totalRevenue = totalRevenue + revenueFromThis;
           } catch (e) {
@@ -160,14 +167,11 @@ export const useDownlineData = () => {
   const getAllLevelsRevenue = (
     userAddress: string,
     levelMap: Record<number, TreeNode[]>,
-    enabled = false
   ) => {
-    const { readContract: contract } = use7KolsContract();
-    if (!contract) return null;
     return useQuery({
-      queryKey: ["allLevelsRevenue", userAddress, enabled],
+      queryKey: ["allLevelsRevenue", userAddress],
       queryFn: async () => {
-        if (!userAddress || !levelMap) return {};
+        if (!userAddress || !levelMap || !contract) return {};
 
         const results: Record<number, LevelRevenue> = {};
 
@@ -188,16 +192,17 @@ export const useDownlineData = () => {
           let totalRevenue = BigInt(0);
           let activeCount = 0;
 
-          for (const memberAddress of levelAddresses) {
+          for (const member of levelAddresses) {
             try {
-              const userInfo = await contract.users(memberAddress.addr);
+              const userInfo = await contract.users(member.addr);
               if (userInfo[6]) activeCount++;
-              const deposits = userInfo[1];
-              const timesDeposited = deposits.div(parseUnits("7", 18));
-              const revenueFromThis = timesDeposited.mul(parseUnits("1", 18));
+              const deposits = BigInt(userInfo[1]);
+              const depositUnit = parseUnits("7", 18);
+              const timesDeposited = deposits / depositUnit;
+              const revenueFromThis = timesDeposited * parseUnits("1", 18);
               totalRevenue = totalRevenue + revenueFromThis;
             } catch (e) {
-              console.error("Error fetching user data:", memberAddress, e);
+              console.error("Error fetching user data:", member.addr, e);
             }
           }
 
@@ -215,14 +220,16 @@ export const useDownlineData = () => {
 
         return results;
       },
-      enabled: enabled && !!contract && !!userAddress && !!levelMap,
+      enabled: !!contract && !!userAddress && !!levelMap,
       staleTime: 60000,
     });
   };
+
   return {
     getTotalDownlineCount,
     getDownlineTree,
     getLevelRevenue,
     getAllLevelsRevenue,
+    contract, // expose contract for debugging
   };
 };

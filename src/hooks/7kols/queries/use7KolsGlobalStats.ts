@@ -9,12 +9,16 @@ export const use7KolsGlobalStats = () => {
     const fetch7KolsGlobalStats = useCallback(async (): Promise<SevenKolsGlobalDataType | null> => {
         if(!readContract) return null;
         try{
-            const totalUsers = await readContract?.getTotalUsers();
-            const totalDeposited = await readContract?.getTotalDeposited();
-            const totalSentToTreasury = await readContract?.getTotalSentToTreasury();
-            const totalFeeAmount = await readContract?.getTotalFeeAmount();
-            const lastJoinedUser = await readContract?.getLastJoinedUser();
-            if(!totalUsers || !totalDeposited || !totalSentToTreasury || !totalFeeAmount || !lastJoinedUser) return null;
+            const totalUsers = await readContract.getTotalUsers();
+            const totalDeposited = await readContract.getTotalDeposited();
+            const totalSentToTreasury = await readContract.getTotalSentToTreasury();
+            const totalFeeAmount = await readContract.getTotalFeeAmount();
+            const lastJoinedUser = await readContract.getLastJoinedUser();
+            
+            // Check for undefined/null but allow 0 as valid value
+            if(totalUsers === undefined || totalDeposited === undefined || 
+               totalSentToTreasury === undefined || totalFeeAmount === undefined || 
+               lastJoinedUser === undefined) return null;
             
             const globalData = {
                 totalUsers: Number(totalUsers),

@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { use7KolsContract } from "@/hooks/use7KolsContract";
 import { useConnection } from "wagmi";
 import { useCallback } from "react";
-import { isAddress } from "viem";
+import { formatUnits, isAddress } from "viem";
 import type { UserDataType } from "@/types/7kols/userDataType";
 
 export const use7KolsUserQuery = () => {
@@ -19,10 +19,10 @@ export const use7KolsUserQuery = () => {
             const user = await readContract?.users(connection.address);
             const userData = {
                 referrer: user[0],
-                totalDeposited: user[1],
-                totalEarned: user[2],
-                totalWithdrawn: user[3],
-                pendingReward: user[4],
+                totalDeposited: formatUnits(user[1], 18),
+                totalEarned: formatUnits(user[2], 18),
+                totalWithdrawn: formatUnits(user[3], 18),
+                pendingReward: formatUnits(user[4], 18),
                 downlineCount: user[5],
                 registered: user[6],
             };

@@ -15,23 +15,21 @@ const levels = [
 
 export const DownlineSummary: React.FC = () => {
   const [activeLevel, setActiveLevel] = useState(1)
-  const [fetchEnabled, setFetchEnabled] = useState(false)
   const connection = useConnection()
-  const userAddress = connection.address || ''
+  const userAddress = connection.address ?? ''
   
   const { getTotalDownlineCount, getDownlineTree, getAllLevelsRevenue } = useDownlineData()
   
   const totalDownlineQuery = getTotalDownlineCount(userAddress)
-  const downlineTreeQuery = getDownlineTree(userAddress, fetchEnabled)
+  const downlineTreeQuery = getDownlineTree(userAddress)
   const allLevelsRevenueQuery = getAllLevelsRevenue(
     userAddress, 
-    downlineTreeQuery?.data?.levelMap || {}, 
-    fetchEnabled && !!downlineTreeQuery?.data?.levelMap
+    downlineTreeQuery.data?.levelMap || {}
   )
 
-  const totalDownlineCount = totalDownlineQuery?.data ?? 0
-  const levelCounts: Record<number, number> = downlineTreeQuery?.data?.levelCounts ?? {}
-  const allLevelsRevenue: Record<number, LevelRevenue> = allLevelsRevenueQuery?.data ?? {}
+  const totalDownlineCount = totalDownlineQuery.data ?? 0
+  const levelCounts: Record<number, number> = downlineTreeQuery.data?.levelCounts ?? {}
+  const allLevelsRevenue: Record<number, LevelRevenue> = allLevelsRevenueQuery.data ?? {}
 
   const currentLevelData = useMemo(() => {
     const levelData = allLevelsRevenue[activeLevel]
@@ -49,41 +47,24 @@ export const DownlineSummary: React.FC = () => {
     }
   }, [activeLevel, allLevelsRevenue, levelCounts])
 
-  // const totalStats = useMemo(() => {
-  //   let totalMembers = 0
-  //   let totalRevenue = 0
-    
-  //   for (let level = 1; level <= 6; level++) {
-  //     const levelData = allLevelsRevenue[level]
-  //     if (levelData) {
-  //       totalMembers += levelData.totalMembers
-  //       totalRevenue += parseFloat(levelData.totalRevenue)
-  //     } else {
-  //       totalMembers += levelCounts[level] ?? 0
-  //     }
-  //   }
-    
-  //   const averagePerMember = totalMembers > 0 ? totalRevenue / totalMembers : 0
-    
-  //   return {
-  //     totalMembers,
-  //     totalRevenue: totalRevenue.toFixed(2),
-  //     averagePerMember: averagePerMember.toFixed(2),
-  //   }
-  // }, [allLevelsRevenue, levelCounts])
 
   const handleRefresh = () => {
-    setFetchEnabled(true)
-    downlineTreeQuery?.refetch?.()
-    allLevelsRevenueQuery?.refetch?.()
+    console.log("handleRefresh")
+    downlineTreeQuery.refetch()
+    console.log("downlineTreeQuery.loading", downlineTreeQuery.isLoading)
+    allLevelsRevenueQuery.refetch()
+    console.log("allLevelsRevenueQuery.loading", allLevelsRevenueQuery.isLoading)
   }
 
-  const isLoading = downlineTreeQuery?.isLoading || allLevelsRevenueQuery?.isLoading
+  const isLoading = useMemo(()=>{
+    return downlineTreeQuery.isLoading || allLevelsRevenueQuery.isLoading
+  }, [downlineTreeQuery.isLoading, allLevelsRevenueQuery.isLoading])
 
+  console.log("isLoading", isLoading)
   return (
     <Card className="p-6">
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-cyan-500/20 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-xl bg-linear-to-br from-purple-500/20 to-cyan-500/20 flex items-center justify-center">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M16 21V5C16 4.46957 15.7893 3.96086 15.4142 3.58579C15.0391 3.21071 14.5304 3 14 3H10C9.46957 3 8.96086 3.21071 8.58579 3.58579C8.21071 3.96086 8 4.46957 8 5V21" stroke="#7B61FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             <path d="M4 21V12C4 11.4696 4.21071 10.9609 4.58579 10.5858C4.96086 10.2107 5.46957 10 6 10H8" stroke="#7B61FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
