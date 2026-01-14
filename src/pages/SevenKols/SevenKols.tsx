@@ -7,7 +7,6 @@ import {
   AddressInfo,
   UplineSection,
   DownlineSummary,
-  TransactionHash,
   PlatformIntroVideos,
   Footer,
 } from '../../components/SevenKols'
@@ -19,22 +18,6 @@ const SevenKols = () => {
 
   const handleDeleteEmail = () => {
     console.log('Deleting email')
-  }
-
-  const handleJoin = (referrerAddress: string) => {
-    console.log('Joining with referrer:', referrerAddress)
-  }
-
-  const handleCopyInviteLink = () => {
-    console.log('Copying invite link')
-  }
-
-  const handleLoadLastJoinedUser = () => {
-    console.log('Loading last joined user')
-  }
-
-  const handleResetReferrer = () => {
-    console.log('Resetting referrer')
   }
 
   return (
@@ -68,17 +51,6 @@ const SevenKols = () => {
 
         <div className="mt-6">
           <DownlineSummary />
-        </div>
-
-        <div className="mt-6">
-          <TransactionHash
-            transactions={[
-              {
-                hash: '0x0d4a9f1b1e1cd8bf933e43bb1dcc1f00b25f',
-                status: 'pending',
-              },
-            ]}
-          />
         </div>
 
         <div className="mt-6">

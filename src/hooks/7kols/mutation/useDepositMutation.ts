@@ -19,7 +19,7 @@ export const useDepositMutation = () => {
             const usdtBalance = await usdtReadContract.balanceOf(connection.address)
             if(usdtBalance < parseUnits('7', 18)){
                 toast.error('Insufficient USDT balance')
-                return
+                throw Error;
             }
             const allowance = await usdtReadContract.allowance(connection.address, SEVEN_KOLS_CONTRACT_ADDRESS)
             if(allowance < parseUnits('7', 18)){

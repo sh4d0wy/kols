@@ -99,11 +99,11 @@ export const JoinStructure: React.FC = () => {
         </div>
 
         <div className="flex gap-3 pt-2">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 flex-1">
           <Button 
             onClick={handleJoin}
-            className="flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isLoadingUserData || depositMutation.isPending}
+            className="flex-1 disabled:opacity-50 max-h-12 disabled:cursor-not-allowed"
+            disabled={isLoadingUserData || depositMutation.isPending || !referrerAddress}
           >
             {
               userData?.registered ? depositMutation.isPending ? <>
@@ -121,7 +121,8 @@ export const JoinStructure: React.FC = () => {
           <Button 
             variant="outline"
             onClick={handleCopyInviteLink}
-            className="flex-1"
+            className="flex-1 max-h-12 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!userData?.registered}
           >
             Copy my invite link
           </Button>
