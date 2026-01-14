@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card } from '../ui'
-import use7KolsGlobalStats from '@/hooks/7kols/use7KolsGlobalStats'
+import { use7KolsGlobalStats } from '@/hooks/7kols/queries/use7KolsGlobalStats'
 
 const formatNumber = (num: number) => {
   return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })

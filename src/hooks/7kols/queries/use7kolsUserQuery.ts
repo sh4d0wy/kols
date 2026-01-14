@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { use7KolsContract } from "../use7KolsContract";
+import { use7KolsContract } from "@/hooks/use7KolsContract";
 import { useConnection } from "wagmi";
 import { useCallback } from "react";
 import { isAddress } from "viem";

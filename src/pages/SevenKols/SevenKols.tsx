@@ -37,10 +37,6 @@ const SevenKols = () => {
     console.log('Resetting referrer')
   }
 
-  const handleRefreshDownline = () => {
-    console.log('Refreshing downline data')
-  }
-
   return (
     <div className="w-full bg-black min-h-screen">
       <div className="w-[95%] max-w-[1400px] mx-auto pb-10">
@@ -77,15 +73,7 @@ const SevenKols = () => {
         </div>
 
         <div className="mt-6">
-          <DownlineSummary
-            data={{
-              networkCount: 28,
-              totalStructureRevenue: 534.87,
-              averagePerMember: 66.86,
-              activeMembers: 5,
-            }}
-            onRefresh={handleRefreshDownline}
-          />
+          <DownlineSummary />
         </div>
 
         <div className="mt-6">

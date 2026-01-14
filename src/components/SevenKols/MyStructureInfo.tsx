@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card } from '../ui'
-import use7KolsUserQuery from '@/hooks/7kols/use7kolsUserQuery'
+import { use7KolsUserQuery } from '@/hooks/7kols/queries/use7kolsUserQuery'
 
 const formatNumber = (num: number) => {
   return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -12,13 +12,13 @@ export const MyStructureInfo: React.FC = () => {
     {
       label: 'REMAINING AMOUNT',
       value: formatNumber(Number(userData?.pendingReward)),
-      suffix: 'UST',
+      suffix: 'USDT',
       hasInfo: true,
     },
     {
       label: 'TOTAL STRUCT AMOUNT',
       value: formatNumber(Number(userData?.totalEarned)),
-      suffix: 'UST',
+      suffix: 'USDT',
       hasInfo: true,
     },
     {
@@ -30,7 +30,7 @@ export const MyStructureInfo: React.FC = () => {
     {
       label: 'TOTAL WITHDRAWN DAY',
       value: formatNumber(Number(userData?.totalWithdrawn)),
-      suffix: 'UST',
+      suffix: 'USDT',
       hasInfo: true,
     },
   ]

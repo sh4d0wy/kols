@@ -1,29 +1,84 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { Card, Button } from '../ui'
-
-interface DownlineSummaryData {
-  networkCount: number
-  totalStructureRevenue: number
-  averagePerMember: number
-  activeMembers: number
-}
-
-interface DownlineSummaryProps {
-  data: DownlineSummaryData
-  onRefresh: () => void
-}
+import { useDownlineData } from '@/hooks/7kols/queries/useDownlineData'
+import { useConnection } from 'wagmi'
+import type { LevelRevenue } from '@/types/7kols/downlineData'
 
 const levels = [
-  { id: 'lv1', label: 'Lv1' },
-  { id: 'lv1-2', label: 'Lv1 to Lv2' },
-  { id: 'lv2-3', label: 'Lv2 to Lv3' },
-  { id: 'lv3-8', label: 'Lv3 to Lv8' },
-  { id: 'lv5-6', label: 'Lv 5/6' },
-  { id: 'lv7-8', label: 'Lv7 to Lv8' },
+  { id: 1, label: 'Level 1' },
+  { id: 2, label: 'Level 2' },
+  { id: 3, label: 'Level 3' },
+  { id: 4, label: 'Level 4' },
+  { id: 5, label: 'Level 5' },
+  { id: 6, label: 'Level 6' },
 ]
 
-export const DownlineSummary: React.FC<DownlineSummaryProps> = ({ data, onRefresh }) => {
-  const [activeLevel, setActiveLevel] = useState('lv1')
+export const DownlineSummary: React.FC = () => {
+  const [activeLevel, setActiveLevel] = useState(1)
+  const [fetchEnabled, setFetchEnabled] = useState(false)
+  const connection = useConnection()
+  const userAddress = connection.address || ''
+  
+  const { getTotalDownlineCount, getDownlineTree, getAllLevelsRevenue } = useDownlineData()
+  
+  const totalDownlineQuery = getTotalDownlineCount(userAddress)
+  const downlineTreeQuery = getDownlineTree(userAddress, fetchEnabled)
+  const allLevelsRevenueQuery = getAllLevelsRevenue(
+    userAddress, 
+    downlineTreeQuery?.data?.levelMap || {}, 
+    fetchEnabled && !!downlineTreeQuery?.data?.levelMap
+  )
+
+  const totalDownlineCount = totalDownlineQuery?.data ?? 0
+  const levelCounts: Record<number, number> = downlineTreeQuery?.data?.levelCounts ?? {}
+  const allLevelsRevenue: Record<number, LevelRevenue> = allLevelsRevenueQuery?.data ?? {}
+
+  const currentLevelData = useMemo(() => {
+    const levelData = allLevelsRevenue[activeLevel]
+    if (!levelData) {
+      return {
+        totalMembers: levelCounts[activeLevel] ?? 0,
+        totalRevenue: '0',
+        averagePerMember: '0',
+      }
+    }
+    return {
+      totalMembers: levelData.totalMembers,
+      totalRevenue: levelData.totalRevenue,
+      averagePerMember: levelData.averagePerMember,
+    }
+  }, [activeLevel, allLevelsRevenue, levelCounts])
+
+  // const totalStats = useMemo(() => {
+  //   let totalMembers = 0
+  //   let totalRevenue = 0
+    
+  //   for (let level = 1; level <= 6; level++) {
+  //     const levelData = allLevelsRevenue[level]
+  //     if (levelData) {
+  //       totalMembers += levelData.totalMembers
+  //       totalRevenue += parseFloat(levelData.totalRevenue)
+  //     } else {
+  //       totalMembers += levelCounts[level] ?? 0
+  //     }
+  //   }
+    
+  //   const averagePerMember = totalMembers > 0 ? totalRevenue / totalMembers : 0
+    
+  //   return {
+  //     totalMembers,
+  //     totalRevenue: totalRevenue.toFixed(2),
+  //     averagePerMember: averagePerMember.toFixed(2),
+  //   }
+  // }, [allLevelsRevenue, levelCounts])
+
+  const handleRefresh = () => {
+    setFetchEnabled(true)
+    downlineTreeQuery?.refetch?.()
+    allLevelsRevenueQuery?.refetch?.()
+  }
+
+  const isLoading = downlineTreeQuery?.isLoading || allLevelsRevenueQuery?.isLoading
 
   return (
     <Card className="p-6">
@@ -44,10 +99,9 @@ export const DownlineSummary: React.FC<DownlineSummaryProps> = ({ data, onRefres
 
       <div className="flex items-center justify-between mb-4">
         <h4 className="text-white font-semibold">Your Network Overview</h4>
-        <span className="text-cyan-400 text-2xl font-bold">{data.networkCount}</span>
+        <span className="text-cyan-400 text-2xl font-bold">{totalDownlineCount}</span>
       </div>
 
-      {/* Level Tabs */}
       <div className="flex flex-wrap gap-2 mb-4">
         {levels.map((level) => (
           <button
@@ -60,39 +114,76 @@ export const DownlineSummary: React.FC<DownlineSummaryProps> = ({ data, onRefres
             }`}
           >
             {level.label}
+            {levelCounts[level.id] !== undefined && (
+              <span className="ml-1 opacity-70">({levelCounts[level.id]})</span>
+            )}
           </button>
         ))}
       </div>
 
-      {/* Action Buttons */}
       <div className="flex gap-3 mb-6">
-        <button className="flex-1 py-3 px-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-full text-gray-400 text-sm font-medium hover:text-white transition-colors">
+        <button 
+          className="flex-1 py-3 px-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-full text-gray-400 text-sm font-medium hover:text-white transition-colors"
+          disabled
+        >
           Real Time (contract)
         </button>
-        <Button onClick={onRefresh} className="flex-1">
-          Refresh (fetch)
+        <Button onClick={handleRefresh} className="flex-1 disabled:opacity-50" disabled={isLoading}>
+          {isLoading ? 'Loading...' : 'Refresh (fetch)'}
         </Button>
       </div>
 
-      {/* Level Stats */}
       <div className="bg-[#111111] rounded-xl p-4">
         <div className="text-center mb-4">
-          <h5 className="text-white font-semibold">Level 1 Direct Referrals</h5>
-          <p className="text-gray-500 text-sm">{data.activeMembers} active members generating structure rewards</p>
+          <h5 className="text-white font-semibold">Level {activeLevel} Referrals</h5>
+          <p className="text-gray-500 text-sm">
+            {currentLevelData.totalMembers} members at this level
+          </p>
         </div>
 
         <div className="space-y-2">
           <div className="flex justify-between items-center py-3 px-4 bg-[#0D0D0D] rounded-xl">
-            <span className="text-gray-400 text-sm">Total Structure Revenue</span>
-            <span className="text-cyan-400 font-semibold">{data.totalStructureRevenue.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT</span>
+            <span className="text-gray-400 text-sm">Total Members</span>
+            <span className="text-cyan-400 font-semibold">{currentLevelData.totalMembers}</span>
+          </div>
+          <div className="flex justify-between items-center py-3 px-4 bg-[#0D0D0D] rounded-xl">
+            <span className="text-gray-400 text-sm">Total Revenue</span>
+            <span className="text-cyan-400 font-semibold">
+              {parseFloat(currentLevelData.totalRevenue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
+            </span>
           </div>
           <div className="flex justify-between items-center py-3 px-4 bg-[#0D0D0D] rounded-xl">
             <span className="text-gray-400 text-sm">Average per Member</span>
-            <span className="text-cyan-400 font-semibold">{data.averagePerMember.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT</span>
+            <span className="text-cyan-400 font-semibold">
+              {parseFloat(currentLevelData.averagePerMember).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
+            </span>
           </div>
         </div>
       </div>
+
+      {/* {fetchEnabled && Object.keys(allLevelsRevenue).length > 0 && (
+        <div className="mt-4 bg-[#111111] rounded-xl p-4">
+          <h5 className="text-white font-semibold text-center mb-3">All Levels Summary</h5>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center py-2 px-4 bg-[#0D0D0D] rounded-xl">
+              <span className="text-gray-400 text-sm">Total Members (All Levels)</span>
+              <span className="text-purple-400 font-semibold">{totalStats.totalMembers}</span>
+            </div>
+            <div className="flex justify-between items-center py-2 px-4 bg-[#0D0D0D] rounded-xl">
+              <span className="text-gray-400 text-sm">Total Revenue (All Levels)</span>
+              <span className="text-purple-400 font-semibold">
+                {parseFloat(totalStats.totalRevenue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
+              </span>
+            </div>
+            <div className="flex justify-between items-center py-2 px-4 bg-[#0D0D0D] rounded-xl">
+              <span className="text-gray-400 text-sm">Average per Member</span>
+              <span className="text-purple-400 font-semibold">
+                {parseFloat(totalStats.averagePerMember).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
+              </span>
+            </div>
+          </div>
+        </div>
+      )} */}
     </Card>
   )
 }
-

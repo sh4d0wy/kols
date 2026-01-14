@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Card } from '../ui'
-import { useGetAddressQuery } from '@/hooks/7kols/useGetAddressQuery'
+import { useGetAddressQuery } from '@/hooks/7kols/queries/useGetAddressQuery'
 
 const AddressRow: React.FC<{ label: string; address: string; color: 'cyan' | 'purple' | 'green' }> = ({ 
   label, 
