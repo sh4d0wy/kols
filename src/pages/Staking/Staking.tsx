@@ -18,7 +18,7 @@ import {
 const Staking = () => {
   return (
     <div className="w-full bg-black min-h-screen pb-10">
-      <div className="w-[90%] max-w-[1400px] mx-auto">
+      <div className="w-[80%] max-w-[1400px] mx-auto">
         <Navbar />
 
         <StakingHeader

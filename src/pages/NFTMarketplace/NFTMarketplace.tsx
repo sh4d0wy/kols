@@ -38,7 +38,7 @@ const NFTMarketplace = () => {
 
   return (
     <div className="w-full bg-black min-h-screen">
-      <div className="w-[90%] max-w-[1400px] mx-auto pb-10">
+      <div className="w-[80%] max-w-[1400px] mx-auto pb-10">
         <Navbar />
         
         <NFTPageHeader
