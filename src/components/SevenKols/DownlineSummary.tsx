@@ -89,7 +89,6 @@ interface TreeBranchProps {
   nodeId: string
   expandedNodes: Set<string>
   toggleNode: (nodeId: string) => void
-  isLast?: boolean
 }
 
 const TreeBranch: React.FC<TreeBranchProps> = ({ 
@@ -97,7 +96,6 @@ const TreeBranch: React.FC<TreeBranchProps> = ({
   nodeId,
   expandedNodes, 
   toggleNode,
-  isLast = true
 }) => {
   const isExpanded = expandedNodes.has(nodeId)
   const hasChildren = node.children && node.children.length > 0
@@ -105,24 +103,13 @@ const TreeBranch: React.FC<TreeBranchProps> = ({
   
   return (
     <div className="relative">
-      {/* Vertical connector line from parent */}
-      {node.depth > 0 && (
-        <div 
-          className="absolute left-3 top-0 w-px bg-linear-to-b from-cyan-500/40 to-transparent"
-          style={{ 
-            height: isLast ? '24px' : '100%',
-            marginLeft: `${(indentLevel - 1) * 40}px`
-          }}
-        />
-      )}
-      
       {/* Horizontal connector to node */}
       {node.depth > 0 && (
         <div 
-          className="absolute top-5 h-px bg-cyan-500/40"
+          className="absolute top-5 h-px bg-cyan-500"
           style={{ 
-            left: `${12 + (indentLevel - 1) * 40}px`,
-            width: '28px'
+            left: `${15 + (indentLevel - 1) * 40}px`,
+            width: '25px'
           }}
         />
       )}
@@ -141,7 +128,7 @@ const TreeBranch: React.FC<TreeBranchProps> = ({
         <div className="relative">
           {/* Vertical line connecting children */}
           <div 
-            className="absolute w-px bg-linear-to-b from-cyan-500/30 via-cyan-500/20 to-transparent"
+            className="absolute w-px bg-cyan-500"
             style={{ 
               left: `${15 + indentLevel * 40}px`,
               top: 0,
@@ -155,7 +142,6 @@ const TreeBranch: React.FC<TreeBranchProps> = ({
               nodeId={`${nodeId}-${index}`}
               expandedNodes={expandedNodes}
               toggleNode={toggleNode}
-              isLast={index === node.children.length - 1}
             />
           ))}
         </div>
