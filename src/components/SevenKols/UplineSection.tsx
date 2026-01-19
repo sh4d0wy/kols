@@ -3,6 +3,7 @@ import { useConnection } from 'wagmi'
 import { useNavigate } from 'react-router-dom'
 import { useUplineQuery } from '@/hooks/7kols/queries/useUplineQuery'
 import {use7KolsUserQuery} from '@/hooks/7kols/queries/use7kolsUserQuery'
+import { ZeroAddress } from 'ethers'
 
 interface UplineSectionProps {
   title?: string
@@ -76,7 +77,9 @@ export const UplineSection: React.FC<UplineSectionProps> = ({
             </button>
           </div>
 
-          {userData?.registered && uplineData?.map((address, index) => (
+          {userData?.registered && uplineData?.map((address, index) => {
+            if(address === ZeroAddress) return null;
+            return (
             <div
               key={index}
               className="bg-[#0d1f1f] border border-[#1a3a3a] rounded-2xl p-4 flex items-center gap-4"
@@ -84,7 +87,7 @@ export const UplineSection: React.FC<UplineSectionProps> = ({
               <span className="text-gray-500 text-sm font-medium border border-[#2a3a3a] rounded-lg px-3 py-1">U{index + 1}</span>
               <span className="text-[#00F5D4] font-mono text-sm">{address}</span>
             </div>
-          ))}
+          )})}
         </div>
       )}
     </div>
