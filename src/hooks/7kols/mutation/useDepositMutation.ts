@@ -3,9 +3,16 @@ import { use7KolsContract } from "@/hooks/use7KolsContract"
 import { toast } from "react-toastify"
 import { useUSDTContract } from "@/hooks/useUSDTContract"
 import { useConnection } from "wagmi"
-import { parseUnits } from "viem"
+import { isAddress, parseUnits } from "viem"
 import { SEVEN_KOLS_CONTRACT_ADDRESS } from "@/utils/7kolsdata"
 import useSevenKolsStore from "@/store/sevenkolsstore"
+
+class ValidationError extends Error {
+    constructor(message: string) {
+        super(message)
+        this.name = 'ValidationError'
+    }
+}
 
 export const useDepositMutation = () => {
     const {writeContract:sevenKolsContract} = use7KolsContract()
@@ -16,10 +23,12 @@ export const useDepositMutation = () => {
     const depositMutation = useMutation({
         mutationFn: async ({referrerAddress,isActive}: {referrerAddress: string, isActive: boolean}) => {
             if(!sevenKolsContract || !usdtReadContract || !usdtWriteContract) return null
+            if(!isAddress(referrerAddress)) {
+                throw new ValidationError('Invalid referrer address')
+            }
             const usdtBalance = await usdtReadContract.balanceOf(connection.address)
             if(usdtBalance < parseUnits('7', 18)){
-                toast.error('Insufficient USDT balance')
-                throw Error;
+                throw new ValidationError('Insufficient USDT balance')
             }
             const allowance = await usdtReadContract.allowance(connection.address, SEVEN_KOLS_CONTRACT_ADDRESS)
             if(allowance < parseUnits('7', 18)){
@@ -44,9 +53,13 @@ export const useDepositMutation = () => {
             queryClient.invalidateQueries({ queryKey: ['7kols-user'] })
             toast.success('Deposit successful')
         },
-        onError: (error:Error) => {
+        onError: (error: Error) => {
             console.log("Error depositing", error)
-            toast.error('Failed to deposit')
+            if (error instanceof ValidationError) {
+                toast.error(error.message)
+            } else {
+                toast.error('Failed to deposit amount')
+            }
         }
     })
     return {

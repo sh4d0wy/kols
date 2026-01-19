@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useConnection } from 'wagmi'
 import { useNavigate } from 'react-router-dom'
 import { useUplineQuery } from '@/hooks/7kols/queries/useUplineQuery'
+import {use7KolsUserQuery} from '@/hooks/7kols/queries/use7kolsUserQuery'
 
 interface UplineSectionProps {
   title?: string
@@ -18,8 +19,9 @@ export const UplineSection: React.FC<UplineSectionProps> = ({
   const connection = useConnection()
   const userAddress = connection.address ?? ''
   const navigate = useNavigate()  
-  const {data: uplineData} = useUplineQuery()
-  console.log("uplineData", uplineData);
+  const {data: uplineData} = useUplineQuery();
+  const {data: userData} = use7KolsUserQuery();
+  
   return (
     <div className="bg-[#0D0D0D] border border-[#1a1a1a] rounded-2xl p-6">
       <button
@@ -74,7 +76,7 @@ export const UplineSection: React.FC<UplineSectionProps> = ({
             </button>
           </div>
 
-          {uplineData?.map((address, index) => (
+          {userData?.registered && uplineData?.map((address, index) => (
             <div
               key={index}
               className="bg-[#0d1f1f] border border-[#1a3a3a] rounded-2xl p-4 flex items-center gap-4"
