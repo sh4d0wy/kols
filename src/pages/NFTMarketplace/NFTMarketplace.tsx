@@ -42,7 +42,6 @@ const NFTMarketplace = () => {
         <Navbar />
         
         <NFTPageHeader
-          network="BSC Testnet"
           claimableBadges={5}
           nftToken="ERC-721"
         />
