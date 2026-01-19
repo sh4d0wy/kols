@@ -1,170 +1,457 @@
-import React, { useState, useMemo } from 'react'
-import { Card, Button } from '../ui'
+import React, { useState, useMemo, useCallback } from 'react'
+import { Card } from '../ui'
 import { useDownlineData } from '@/hooks/7kols/queries/useDownlineData'
 import { useConnection } from 'wagmi'
-import type { LevelRevenue } from '@/types/7kols/downlineData'
+import type { TreeNode } from '@/types/7kols/downlineData'
 
 const levels = [
-  { id: 1, label: 'Level 1' },
-  { id: 2, label: 'Level 2' },
-  { id: 3, label: 'Level 3' },
-  { id: 4, label: 'Level 4' },
-  { id: 5, label: 'Level 5' },
-  { id: 6, label: 'Level 6' },
+  { id: 1, label: 'L1' },
+  { id: 2, label: 'L2' },
+  { id: 3, label: 'L3' },
+  { id: 4, label: 'L4' },
+  { id: 5, label: 'L5' },
+  { id: 6, label: 'L6' },
 ]
 
+const countDescendants = (node: TreeNode): number => {
+  if (!node.children || node.children.length === 0) return 0
+  return node.children.reduce((sum, child) => sum + 1 + countDescendants(child), 0)
+}
+
+interface TreeNodeRowProps {
+  node: TreeNode
+  isExpanded: boolean
+  onToggle: () => void
+  hasChildren: boolean
+}
+
+const TreeNodeRow: React.FC<TreeNodeRowProps> = ({ 
+  node, 
+  isExpanded, 
+  onToggle, 
+  hasChildren
+}) => {
+  const descendantCount = countDescendants(node)
+  
+  return (
+    <div className="flex items-center gap-3 py-2">
+      {/* Expand/collapse button */}
+      <button 
+        onClick={onToggle}
+        className={`w-6 h-6 rounded flex items-center justify-center transition-all ${
+          hasChildren 
+            ? 'bg-[#1a1a1a] border border-[#2a2a2a] hover:border-cyan-500/50 text-gray-400 hover:text-cyan-400 cursor-pointer' 
+            : 'text-transparent cursor-default'
+        }`}
+        disabled={!hasChildren}
+      >
+        {hasChildren && (
+          <svg 
+            width="12" 
+            height="12" 
+            viewBox="0 0 12 12" 
+            fill="none" 
+            className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+          >
+            <path 
+              d="M3 4.5L6 7.5L9 4.5" 
+              stroke="currentColor" 
+              strokeWidth="1.5" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            />
+          </svg>
+        )}
+      </button>
+      
+      {/* Level badge */}
+      <div className="w-9 h-9 rounded-lg bg-linear-to-br from-cyan-500/20 to-teal-500/30 flex items-center justify-center border border-cyan-500/30">
+        <span className="text-cyan-400 font-bold text-sm">L{node.depth}</span>
+      </div>
+      
+      {/* Address */}
+      <div className="flex-1 font-mono text-sm text-gray-300 tracking-wide">
+        {node.addr}
+      </div>
+      
+      {/* Downline count badge */}
+      <div className="px-4 py-1.5 rounded-full border border-cyan-500/40 bg-cyan-500/10">
+        <span className="text-cyan-400 font-medium text-sm">
+          Downline {descendantCount}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+interface TreeBranchProps {
+  node: TreeNode
+  nodeId: string
+  expandedNodes: Set<string>
+  toggleNode: (nodeId: string) => void
+  isLast?: boolean
+}
+
+const TreeBranch: React.FC<TreeBranchProps> = ({ 
+  node, 
+  nodeId,
+  expandedNodes, 
+  toggleNode,
+  isLast = true
+}) => {
+  const isExpanded = expandedNodes.has(nodeId)
+  const hasChildren = node.children && node.children.length > 0
+  const indentLevel = node.depth
+  
+  return (
+    <div className="relative">
+      {/* Vertical connector line from parent */}
+      {node.depth > 0 && (
+        <div 
+          className="absolute left-3 top-0 w-px bg-linear-to-b from-cyan-500/40 to-transparent"
+          style={{ 
+            height: isLast ? '24px' : '100%',
+            marginLeft: `${(indentLevel - 1) * 40}px`
+          }}
+        />
+      )}
+      
+      {/* Horizontal connector to node */}
+      {node.depth > 0 && (
+        <div 
+          className="absolute top-5 h-px bg-cyan-500/40"
+          style={{ 
+            left: `${12 + (indentLevel - 1) * 40}px`,
+            width: '28px'
+          }}
+        />
+      )}
+      
+      {/* Node content with indentation */}
+      <div style={{ marginLeft: `${indentLevel * 40}px` }}>
+        <TreeNodeRow 
+          node={node}
+          isExpanded={isExpanded}
+          onToggle={() => toggleNode(nodeId)}
+          hasChildren={hasChildren}
+        />
+      </div>
+      
+      {hasChildren && isExpanded && (
+        <div className="relative">
+          {/* Vertical line connecting children */}
+          <div 
+            className="absolute w-px bg-linear-to-b from-cyan-500/30 via-cyan-500/20 to-transparent"
+            style={{ 
+              left: `${15 + indentLevel * 40}px`,
+              top: 0,
+              bottom: 0
+            }}
+          />
+          {node.children.map((child, index) => (
+            <TreeBranch
+              key={`${nodeId}-${index}`}
+              node={child}
+              nodeId={`${nodeId}-${index}`}
+              expandedNodes={expandedNodes}
+              toggleNode={toggleNode}
+              isLast={index === node.children.length - 1}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+const collectNodesAtDepth = (node: TreeNode, targetDepth: number): TreeNode[] => {
+  const result: TreeNode[] = []
+  const traverse = (n: TreeNode) => {
+    if (n.depth === targetDepth) {
+      result.push(n)
+    }
+    n.children?.forEach(traverse)
+  }
+  traverse(node)
+  return result
+}
+
 export const DownlineSummary: React.FC = () => {
-  const [activeLevel, setActiveLevel] = useState(1)
-  const connection = useConnection()
+  const [viewMode, setViewMode] = useState<'realtime' | 'demo'>('demo')
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set())
+  const [isCardExpanded, setIsCardExpanded] = useState(true)
+  const connection = useConnection() 
   const userAddress = connection.address ?? ''
   
-  const { getTotalDownlineCount, getDownlineTree, getAllLevelsRevenue } = useDownlineData()
+  const { getTotalDownlineCount, getDownlineTree } = useDownlineData()
   
   const totalDownlineQuery = getTotalDownlineCount(userAddress)
   const downlineTreeQuery = getDownlineTree(userAddress)
-  const allLevelsRevenueQuery = getAllLevelsRevenue(
-    userAddress, 
-    downlineTreeQuery.data?.levelMap || {}
-  )
 
   const totalDownlineCount = totalDownlineQuery.data ?? 0
   const levelCounts: Record<number, number> = downlineTreeQuery.data?.levelCounts ?? {}
-  const allLevelsRevenue: Record<number, LevelRevenue> = allLevelsRevenueQuery.data ?? {}
+  const treeRoot = downlineTreeQuery.data?.root
 
-  const currentLevelData = useMemo(() => {
-    const levelData = allLevelsRevenue[activeLevel]
-    if (!levelData) {
-      return {
-        totalMembers: levelCounts[activeLevel] ?? 0,
-        totalRevenue: '0',
-        averagePerMember: '0',
-      }
+  const generateDemoAddress = (seed: number) => {
+    const chars = '0123456789ABCDEFabcdef'
+    let addr = '0x'
+    for (let i = 0; i < 40; i++) {
+      addr += chars[(seed * (i + 1) * 7) % chars.length]
     }
+    return addr
+  }
+
+  const demoTree: TreeNode = useMemo(() => {
+    const createChildren = (depth: number, parentSeed: number, count: number): TreeNode[] => {
+      if (depth > 6) return []
+      return Array.from({ length: count }, (_, i) => {
+        const seed = parentSeed * 10 + i + 1
+        const childCount = depth < 6 ? Math.max(1, Math.floor(Math.random() * 3) + 1) : 0
+        return {
+          addr: generateDemoAddress(seed),
+          depth,
+          children: createChildren(depth + 1, seed, childCount)
+        }
+      })
+    }
+
     return {
-      totalMembers: levelData.totalMembers,
-      totalRevenue: levelData.totalRevenue,
-      averagePerMember: levelData.averagePerMember,
+      addr: '0x09Bd4ACB98A9D90263526l6760F07dAb430e6foC3',
+      depth: 0,
+      children: [
+        {
+          addr: generateDemoAddress(1),
+          depth: 1,
+          children: [
+            { addr: generateDemoAddress(11), depth: 2, children: [
+              { addr: generateDemoAddress(111), depth: 3, children: [
+                { addr: generateDemoAddress(1111), depth: 4, children: [
+                  { addr: generateDemoAddress(11111), depth: 5, children: [
+                    { addr: generateDemoAddress(111111), depth: 6, children: [] }
+                  ]}
+                ]},
+                { addr: generateDemoAddress(1112), depth: 4, children: [] }
+              ]},
+              { addr: generateDemoAddress(112), depth: 3, children: [] }
+            ]},
+            { addr: generateDemoAddress(12), depth: 2, children: [
+              { addr: generateDemoAddress(121), depth: 3, children: [] }
+            ]}
+          ]
+        },
+        {
+          addr: generateDemoAddress(2),
+          depth: 1,
+          children: [
+            { addr: generateDemoAddress(21), depth: 2, children: [
+              { addr: generateDemoAddress(211), depth: 3, children: [
+                { addr: generateDemoAddress(2111), depth: 4, children: [
+                  { addr: generateDemoAddress(21111), depth: 5, children: [
+                    { addr: generateDemoAddress(211111), depth: 6, children: [] }
+                  ]}
+                ]}
+              ]}
+            ]},
+            { addr: generateDemoAddress(22), depth: 2, children: [] }
+          ]
+        },
+        {
+          addr: generateDemoAddress(3),
+          depth: 1,
+          children: [
+            { addr: generateDemoAddress(31), depth: 2, children: [] },
+            { addr: generateDemoAddress(32), depth: 2, children: [
+              { addr: generateDemoAddress(321), depth: 3, children: [
+                { addr: generateDemoAddress(3211), depth: 4, children: [] }
+              ]}
+            ]}
+          ]
+        }
+      ]
     }
-  }, [activeLevel, allLevelsRevenue, levelCounts])
+  }, [])
 
+  const displayTree = viewMode === 'demo' ? demoTree : treeRoot
+
+  const demoLevelCounts = useMemo(() => {
+    if (!demoTree) return [0, 0, 0, 0, 0, 0]
+    return levels.map(level => collectNodesAtDepth(demoTree, level.id).length)
+  }, [demoTree])
+
+  const toggleNode = useCallback((nodeId: string) => {
+    setExpandedNodes(prev => {
+      const next = new Set(prev)
+      if (next.has(nodeId)) {
+        next.delete(nodeId)
+      } else {
+        next.add(nodeId)
+      }
+      return next
+    })
+  }, [])
+
+  const expandAll = useCallback(() => {
+    if (!displayTree) return
+    const allNodeIds = new Set<string>()
+    const collectNodeIds = (node: TreeNode, parentId: string) => {
+      allNodeIds.add(parentId)
+      node.children?.forEach((child, index) => {
+        collectNodeIds(child, `${parentId}-${index}`)
+      })
+    }
+    collectNodeIds(displayTree, 'root')
+    setExpandedNodes(allNodeIds)
+  }, [displayTree])
+
+  const collapseAll = useCallback(() => {
+    setExpandedNodes(new Set())
+  }, [])
 
   const handleRefresh = () => {
     downlineTreeQuery.refetch()
-    allLevelsRevenueQuery.refetch()
   }
 
-  const isLoading = useMemo(()=>{
-    return downlineTreeQuery.isFetching || allLevelsRevenueQuery.isFetching || downlineTreeQuery.isLoading || allLevelsRevenueQuery.isLoading
-  }, [downlineTreeQuery, allLevelsRevenueQuery])
+  const isLoading = useMemo(() => {
+    return downlineTreeQuery.isFetching || downlineTreeQuery.isLoading
+  }, [downlineTreeQuery])
 
   return (
     <Card className="p-6">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-xl bg-linear-to-br from-purple-500/20 to-cyan-500/20 flex items-center justify-center">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16 21V5C16 4.46957 15.7893 3.96086 15.4142 3.58579C15.0391 3.21071 14.5304 3 14 3H10C9.46957 3 8.96086 3.21071 8.58579 3.58579C8.21071 3.96086 8 4.46957 8 5V21" stroke="#7B61FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M4 21V12C4 11.4696 4.21071 10.9609 4.58579 10.5858C4.96086 10.2107 5.46957 10 6 10H8" stroke="#7B61FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M20 21V12C20 11.4696 19.7893 10.9609 19.4142 10.5858C19.0391 10.2107 18.5304 10 18 10H16" stroke="#7B61FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M1 21H23" stroke="#7B61FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      {/* Header */}
+      <div 
+        className="flex items-center justify-between cursor-pointer"
+        onClick={() => setIsCardExpanded(!isCardExpanded)}
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-linear-to-br from-cyan-500/20 to-teal-500/20 flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L12 8" stroke="#22D3EE" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M12 8L4 14" stroke="#22D3EE" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M12 8L20 14" stroke="#22D3EE" strokeWidth="2" strokeLinecap="round"/>
+              <circle cx="12" cy="2" r="2" fill="#22D3EE"/>
+              <circle cx="4" cy="16" r="3" stroke="#22D3EE" strokeWidth="2"/>
+              <circle cx="20" cy="16" r="3" stroke="#22D3EE" strokeWidth="2"/>
+              <circle cx="12" cy="22" r="2" fill="#22D3EE"/>
+              <path d="M4 19L4 22L12 22" stroke="#22D3EE" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M20 19L20 22L12 22" stroke="#22D3EE" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-white font-semibold text-lg">Downline (My Network)</h3>
+            <p className="text-gray-500 text-sm">Your referral tree and network structure</p>
+          </div>
+        </div>
+        <button className="text-gray-400 hover:text-white transition-colors">
+          <svg 
+            width="20" 
+            height="20" 
+            viewBox="0 0 24 24" 
+            fill="none"
+            className={`transition-transform duration-200 ${isCardExpanded ? '' : 'rotate-180'}`}
+          >
+            <path d="M18 15L12 9L6 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
-        </div>
-        <div>
-          <h3 className="text-white font-semibold text-lg">Downline Summary</h3>
-          <p className="text-gray-500 text-sm">Track downline chain only</p>
-        </div>
+        </button>
       </div>
 
-      <div className="flex items-center justify-between mb-4">
-        <h4 className="text-white font-semibold">Your Network Overview</h4>
-        <span className="text-cyan-400 text-2xl font-bold">{totalDownlineCount}</span>
+      {isCardExpanded && (
+        <>
+      {/* Downline Summary */}
+      <div className="mt-4 mb-4">
+        <h4 className="text-white font-semibold mb-1">Downline Summary</h4>
+        <p className="text-gray-500 text-sm">
+          Total downline {viewMode === 'demo' ? '(demo)' : ''}: <span className="text-cyan-400 font-semibold">{viewMode === 'demo' ? demoLevelCounts.reduce((a, b) => a + b, 0) : totalDownlineCount}</span>
+        </p>
       </div>
 
+      {/* Level pills */}
       <div className="flex flex-wrap gap-2 mb-4">
         {levels.map((level) => (
-          <button
+          <div
             key={level.id}
-            onClick={() => setActiveLevel(level.id)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-              activeLevel === level.id
-                ? 'bg-primary-gradient text-[#0D0D0D]'
-                : 'bg-[#1a1a1a] text-gray-400 hover:text-white border border-[#2a2a2a]'
-            }`}
+            className="px-3 py-1.5 rounded-full text-xs font-medium bg-[#1a1a1a] text-gray-400 border border-[#2a2a2a]"
           >
-            {level.label}
-            {levelCounts[level.id] !== undefined && (
-              <span className="ml-1 opacity-70">({levelCounts[level.id]})</span>
-            )}
-          </button>
+            {level.label}: {viewMode === 'demo' ? demoLevelCounts[level.id - 1] : (levelCounts[level.id] ?? 0)}
+          </div>
         ))}
       </div>
 
+      {/* View mode toggle */}
       <div className="flex gap-3 mb-6">
         <button 
-          className="flex-1 py-3 px-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-full text-gray-400 text-sm font-medium hover:text-white transition-colors"
-          disabled
+          onClick={() => setViewMode('realtime')}
+          className={`flex-1 py-3 px-4 rounded-full text-sm font-medium transition-all ${
+            viewMode === 'realtime'
+              ? 'bg-primary-gradient text-[#0D0D0D]'
+              : 'bg-[#1a1a1a] border border-[#2a2a2a] text-gray-400 hover:text-white'
+          }`}
         >
           Real Time (contract)
         </button>
-        <Button onClick={handleRefresh} className="flex-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100" disabled={isLoading}>
-          {isLoading ? 'Loading...' : 'Refresh (fetch)'}
-        </Button>
+        <button 
+          onClick={() => setViewMode('demo')}
+          className={`flex-1 py-3 px-4 rounded-full text-sm font-medium transition-all ${
+            viewMode === 'demo'
+              ? 'bg-primary-gradient text-[#0D0D0D]'
+              : 'bg-[#1a1a1a] border border-[#2a2a2a] text-gray-400 hover:text-white'
+          }`}
+        >
+          Demo Tree (mock)
+        </button>
       </div>
-      {isLoading ? (
-        <div className="flex justify-center items-center h-full">
+
+      <div className="flex gap-2 mb-4">
+        <button 
+          onClick={expandAll}
+          className="px-3 py-1.5 text-xs font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
+        >
+          Expand All
+        </button>
+        <button 
+          onClick={collapseAll}
+          className="px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-white transition-colors"
+        >
+          Collapse All
+        </button>
+        {viewMode === 'realtime' && (
+          <button 
+            onClick={handleRefresh}
+            disabled={isLoading}
+            className="ml-auto px-3 py-1.5 text-xs font-medium text-cyan-400 hover:text-cyan-300 transition-colors disabled:opacity-50"
+          >
+            {isLoading ? 'Loading...' : 'Refresh'}
+          </button>
+        )}
+      </div>
+
+      {/* Tree view */}
+      {isLoading && viewMode === 'realtime' ? (
+        <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
         </div>
-      ) : ( 
-      <div className="bg-[#111111] rounded-xl p-4">
-        <div className="text-center mb-4">
-          <h5 className="text-white font-semibold">Level {activeLevel} Referrals</h5>
-          <p className="text-gray-500 text-sm">
-            {currentLevelData.totalMembers} members at this level
-          </p>
+      ) : (
+        <div className="bg-[#111111] rounded-xl p-4 overflow-x-auto">
+          {displayTree ? (
+            <div className="min-w-fit">
+              <TreeBranch 
+                node={displayTree}
+                nodeId="root"
+                expandedNodes={expandedNodes}
+                toggleNode={toggleNode}
+              />
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              {viewMode === 'realtime' 
+                ? 'Connect your wallet to view your downline tree'
+                : 'No tree data available'
+              }
+            </div>
+          )}
         </div>
-
-        <div className="space-y-2">
-          <div className="flex justify-between items-center py-3 px-4 bg-[#0D0D0D] rounded-xl">
-            <span className="text-gray-400 text-sm">Total Members</span>
-            <span className="text-cyan-400 font-semibold">{currentLevelData.totalMembers}</span>
-          </div>
-          <div className="flex justify-between items-center py-3 px-4 bg-[#0D0D0D] rounded-xl">
-            <span className="text-gray-400 text-sm">Total Revenue</span>
-            <span className="text-cyan-400 font-semibold">
-              {parseFloat(currentLevelData.totalRevenue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
-            </span>
-          </div>
-          <div className="flex justify-between items-center py-3 px-4 bg-[#0D0D0D] rounded-xl">
-            <span className="text-gray-400 text-sm">Average per Member</span>
-            <span className="text-cyan-400 font-semibold">
-              {parseFloat(currentLevelData.averagePerMember).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
-            </span>
-          </div>
-        </div>
-      </div>
       )}
-      {/* {fetchEnabled && Object.keys(allLevelsRevenue).length > 0 && (
-        <div className="mt-4 bg-[#111111] rounded-xl p-4">
-          <h5 className="text-white font-semibold text-center mb-3">All Levels Summary</h5>
-          <div className="space-y-2">
-            <div className="flex justify-between items-center py-2 px-4 bg-[#0D0D0D] rounded-xl">
-              <span className="text-gray-400 text-sm">Total Members (All Levels)</span>
-              <span className="text-purple-400 font-semibold">{totalStats.totalMembers}</span>
-            </div>
-            <div className="flex justify-between items-center py-2 px-4 bg-[#0D0D0D] rounded-xl">
-              <span className="text-gray-400 text-sm">Total Revenue (All Levels)</span>
-              <span className="text-purple-400 font-semibold">
-                {parseFloat(totalStats.totalRevenue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
-              </span>
-            </div>
-            <div className="flex justify-between items-center py-2 px-4 bg-[#0D0D0D] rounded-xl">
-              <span className="text-gray-400 text-sm">Average per Member</span>
-              <span className="text-purple-400 font-semibold">
-                {parseFloat(totalStats.averagePerMember).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
-              </span>
-            </div>
-          </div>
-        </div>
-      )} */}
+        </>
+      )}
     </Card>
   )
 }

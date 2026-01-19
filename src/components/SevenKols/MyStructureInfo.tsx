@@ -58,10 +58,10 @@ export const MyStructureInfo: React.FC = () => {
             className="bg-linear-to-br from-[#0a1a1a] to-[#0d1520] border border-cyan-500/20 rounded-xl p-4"
           >
             <div className="flex items-center gap-1 mb-2">
-              <span className="text-gray-500 text-xs uppercase tracking-wider">{stat.label}</span>
+              <span className="text-gray-500 text-xs uppercase ">{stat.label}</span>
               {stat.tooltip && (
                 <div className="relative group">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gray-600 cursor-help hover:text-gray-400 transition-colors">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gray-600 cursor-pointer hover:text-gray-400 transition-colors">
                     <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
                     <path d="M12 16V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                     <circle cx="12" cy="8" r="1" fill="currentColor"/>
@@ -73,7 +73,9 @@ export const MyStructureInfo: React.FC = () => {
               )}
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-white text-2xl font-bold">{stat.value}</span>
+              <span className="text-white text-2xl font-bold">
+                {isNaN(Number(stat.value)) ? 0 : stat.value}
+              </span>
               {stat.suffix && (
                 <span className="text-cyan-400 text-sm font-semibold">{stat.suffix}</span>
               )}
