@@ -1,5 +1,8 @@
 import React, { useState } from 'react'
 import { Card, Button } from '../ui'
+import { NFT_CONTRACT_ADDRESS } from '@/utils/nftdata'
+import { NFT_MARKETPLACE_CONTRACT_ADDRESS } from '@/utils/nftmarketplacedata'
+import { USDT_CONTRACT_ADDRESS } from '@/utils/usdtData'
 
 interface ContractAddress {
   label: string
@@ -9,6 +12,21 @@ interface ContractAddress {
 interface ContractInformationProps {
   contracts: ContractAddress[]
 }
+
+const CONTRACTS: ContractAddress[] = [
+  {
+    label: 'NFT KOLS Participation Badge',
+    address: NFT_CONTRACT_ADDRESS ,
+  },
+  {
+    label: 'Marketplace',
+    address: NFT_MARKETPLACE_CONTRACT_ADDRESS,
+  },
+  {
+    label: 'USDT',
+    address: USDT_CONTRACT_ADDRESS,
+  }
+]
 
 const AddressCard: React.FC<{ label: string; address: string }> = ({ label, address }) => {
   const [copied, setCopied] = useState(false)
@@ -46,7 +64,7 @@ const AddressCard: React.FC<{ label: string; address: string }> = ({ label, addr
   )
 }
 
-export const ContractInformation: React.FC<ContractInformationProps> = ({ contracts }) => {
+export const ContractInformation: React.FC= () => {
   return (
     <Card className="p-6">
       <div className="flex items-center gap-3 mb-6">
@@ -66,7 +84,7 @@ export const ContractInformation: React.FC<ContractInformationProps> = ({ contra
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {contracts.map((contract, index) => (
+        {CONTRACTS.map((contract, index) => (
           <AddressCard key={index} label={contract.label} address={contract.address} />
         ))}
       </div>

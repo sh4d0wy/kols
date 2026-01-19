@@ -112,13 +112,7 @@ const NFTMarketplace = () => {
         </div>
 
         <div className="mt-6">
-          <ContractInformation
-            contracts={[
-              { label: 'NFT KOLS Participation Badge', address: '0x1a4e6fcd3b8a9bc4a5f8c22dc7' },
-              { label: 'Marketplace', address: '0xd1f0a4e5c918d4a56db4ad3e5a8c' },
-              { label: 'USDT (Testnet)', address: '0x6e4fadba8e9a2ec' },
-            ]}
-          />
+          <ContractInformation />
         </div>
       </div>
 
