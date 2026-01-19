@@ -8,7 +8,8 @@ const config = createConfig(
     chains: [bscTestnet],
     transports: {
         [bscTestnet.id]: http(
-        `https://bnb-testnet.g.alchemy.com/v2/${import.meta.env.VITE_ALCHEMY_ID}`,
+        // `https://bnb-testnet.g.alchemy.com/v2/${import.meta.env.VITE_ALCHEMY_ID}`,
+        'https://bsc-testnet-dataseed.bnbchain.org'
       ),
     },
 

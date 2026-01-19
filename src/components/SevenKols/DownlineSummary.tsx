@@ -54,8 +54,8 @@ export const DownlineSummary: React.FC = () => {
   }
 
   const isLoading = useMemo(()=>{
-    return downlineTreeQuery.isFetching || allLevelsRevenueQuery.isFetching
-  }, [downlineTreeQuery.isFetching, allLevelsRevenueQuery.isFetching])
+    return downlineTreeQuery.isFetching || allLevelsRevenueQuery.isFetching || downlineTreeQuery.isLoading || allLevelsRevenueQuery.isLoading
+  }, [downlineTreeQuery, allLevelsRevenueQuery])
 
   return (
     <Card className="p-6">
@@ -109,7 +109,11 @@ export const DownlineSummary: React.FC = () => {
           {isLoading ? 'Loading...' : 'Refresh (fetch)'}
         </Button>
       </div>
-
+      {isLoading ? (
+        <div className="flex justify-center items-center h-full">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
+        </div>
+      ) : ( 
       <div className="bg-[#111111] rounded-xl p-4">
         <div className="text-center mb-4">
           <h5 className="text-white font-semibold">Level {activeLevel} Referrals</h5>
@@ -137,7 +141,7 @@ export const DownlineSummary: React.FC = () => {
           </div>
         </div>
       </div>
-
+      )}
       {/* {fetchEnabled && Object.keys(allLevelsRevenue).length > 0 && (
         <div className="mt-4 bg-[#111111] rounded-xl p-4">
           <h5 className="text-white font-semibold text-center mb-3">All Levels Summary</h5>

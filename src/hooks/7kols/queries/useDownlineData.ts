@@ -168,8 +168,13 @@ export const useDownlineData = () => {
     userAddress: string,
     levelMap: Record<number, TreeNode[]>,
   ) => {
+    const totalMembersInLevelMap = Object.values(levelMap).reduce(
+      (sum, nodes) => sum + (nodes?.length || 0),
+      0
+    );
+
     return useQuery({
-      queryKey: ["allLevelsRevenue", userAddress],
+      queryKey: ["allLevelsRevenue", userAddress, totalMembersInLevelMap],
       queryFn: async () => {
         if (!userAddress || !levelMap || !contract) return {};
 
@@ -220,7 +225,7 @@ export const useDownlineData = () => {
 
         return results;
       },
-      enabled: !!contract && !!userAddress && !!levelMap,
+      enabled: !!contract && !!userAddress && totalMembersInLevelMap > 0,
       staleTime: 60000,
     });
   };
@@ -230,6 +235,6 @@ export const useDownlineData = () => {
     getDownlineTree,
     getLevelRevenue,
     getAllLevelsRevenue,
-    contract, // expose contract for debugging
+    contract,
   };
 };
