@@ -35,8 +35,10 @@ export const JoinStructure: React.FC = () => {
         return
       }
       setReferrerAddress(refParam)
+    }else{
+      setReferrerAddress('')
     }
-  }, [searchParams, userData?.referrer])
+  }, [searchParams, userData?.referrer,connection.address])
 
   const handleJoin = () => {
     depositMutation.mutate({referrerAddress: referrerAddress ?? '', isActive: userData?.registered ?? false})
@@ -72,6 +74,8 @@ export const JoinStructure: React.FC = () => {
       </div>
 
       <div className="space-y-4">
+        
+        {!userData?.registered && <>
         <div>
           <label className="block text-gray-400 text-sm mb-2">Referrer Address (Required for first join)</label>
           <input
@@ -97,8 +101,10 @@ export const JoinStructure: React.FC = () => {
             Reset referrer
           </button>
         </div>
+        </>
+}
 
-        <div className="flex gap-3 pt-2">
+        <div className={`flex gap-3 pt-2 ${!userData?.registered ? 'flex-row' : 'flex-col mt-6'}`}>
           <div className="flex flex-col gap-2 flex-1">
           <Button 
             onClick={handleJoin}
