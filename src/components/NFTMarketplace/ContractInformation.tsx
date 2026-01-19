@@ -9,10 +9,6 @@ interface ContractAddress {
   address: string
 }
 
-interface ContractInformationProps {
-  contracts: ContractAddress[]
-}
-
 const CONTRACTS: ContractAddress[] = [
   {
     label: 'NFT KOLS Participation Badge',
