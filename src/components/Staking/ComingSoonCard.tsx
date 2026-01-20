@@ -18,7 +18,7 @@ export const ComingSoonCard: React.FC<ComingSoonCardProps> = ({ title, descripti
     <Card className="p-5 hover:border-cyan-500/30 transition-all duration-300 group cursor-pointer">
       <div className="flex justify-between items-start mb-3">
         <h4 className="text-white font-semibold">{title}</h4>
-        <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500/30 transition-colors">
+        <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center text-[#00FFD1] group-hover:bg-cyan-500/30 transition-colors">
           <ArrowIcon />
         </div>
       </div>

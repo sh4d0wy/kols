@@ -18,16 +18,16 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   const percentage = Math.min((value / maxValue) * 100, 100)
   
   const barColors = {
-    cyan: 'bg-cyan-400',
+    cyan: 'bg-[#00FFD1]',
     purple: 'bg-purple-400',
-    gradient: 'bg-gradient-to-r from-cyan-400 to-purple-400'
+    gradient: 'bg-gradient-to-r from-[#00FFD1] to-purple-400'
   }
 
   return (
     <div className="space-y-2">
       <div className="flex justify-between items-center">
         <span className="text-sm text-gray-400">{label}</span>
-        <span className="text-sm font-semibold text-cyan-400 font-mono">
+        <span className="text-sm font-semibold text-[#00FFD1] font-mono">
           {showPercentage ? `${value}%` : value}
         </span>
       </div>

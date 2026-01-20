@@ -28,7 +28,7 @@ export const Footer: React.FC = () => {
             <a
               key={link.label}
               href={link.href}
-              className="text-gray-500 text-sm hover:text-cyan-400 transition-colors"
+              className="text-gray-500 text-sm hover:text-[#00FFD1] transition-colors"
             >
               {link.label}
             </a>

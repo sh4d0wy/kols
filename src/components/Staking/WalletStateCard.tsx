@@ -41,7 +41,7 @@ export const WalletStateCard = () => {
         
         <div className="flex justify-between items-center py-3.5 px-4 bg-[#111111] rounded-xl">
           <span className="text-gray-400 text-sm">Unlock Time</span>
-          <span className="text-cyan-400">
+          <span className="text-[#00FFD1]">
             {walletStats?.unlockTime 
               ? new Date(walletStats.unlockTime * 1000).toLocaleDateString('en-US', {
                   month: 'short',

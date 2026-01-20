@@ -15,7 +15,7 @@ export const ContractRules: React.FC = () => {
   return (
     <Card className="p-6">
       <div className="flex items-center gap-3 mb-2">
-        <div className="w-10 h-10 rounded-xl bg-[#1a1a1a] flex items-center justify-center text-cyan-400">
+        <div className="w-10 h-10 rounded-xl bg-[#1a1a1a] flex items-center justify-center text-[#00FFD1]">
           <InfoIcon />
         </div>
         <div>

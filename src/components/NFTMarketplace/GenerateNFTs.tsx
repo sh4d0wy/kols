@@ -31,7 +31,7 @@ export const GenerateNFTs: React.FC<GenerateNFTsProps> = ({ data, onGenerate }) 
       value: data.generationFee.toString(),
       suffix: 'USDT',
       sublabel: 'PER BADGE',
-      valueColor: 'text-cyan-400',
+      valueColor: 'text-[#00FFD1]',
     },
     {
       label: 'NEXT GENERATION',
@@ -69,7 +69,7 @@ export const GenerateNFTs: React.FC<GenerateNFTsProps> = ({ data, onGenerate }) 
                 {stat.value}
               </span>
               {stat.suffix && (
-                <span className="text-cyan-400 font-semibold">{stat.suffix}</span>
+                <span className="text-[#00FFD1] font-semibold">{stat.suffix}</span>
               )}
             </div>
             <span className="text-gray-600 text-xs">{stat.sublabel}</span>

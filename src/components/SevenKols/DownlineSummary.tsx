@@ -34,13 +34,13 @@ const TreeNodeRow: React.FC<TreeNodeRowProps> = ({
   const descendantCount = countDescendants(node)
   
   return (
-    <div className="flex items-center gap-3 py-2">
+    <div className="flex my-3 items-center gap-3 py-2 border-2 border-[#00FFD1]/10 rounded-lg p-4 bg-[#00FFD1]/5">
       {/* Expand/collapse button */}
       <button 
         onClick={onToggle}
         className={`w-6 h-6 rounded flex items-center justify-center transition-all ${
           hasChildren 
-            ? 'bg-[#1a1a1a] border border-[#2a2a2a] hover:border-cyan-500/50 text-gray-400 hover:text-cyan-400 cursor-pointer' 
+            ? 'bg-[#1a1a1a] border border-[#2a2a2a] hover:border-[#00FFD1]/50 text-gray-400 hover:text-[#00FFD1] cursor-pointer' 
             : 'text-transparent cursor-default'
         }`}
         disabled={!hasChildren}
@@ -65,8 +65,8 @@ const TreeNodeRow: React.FC<TreeNodeRowProps> = ({
       </button>
       
       {/* Level badge */}
-      <div className="w-9 h-9 rounded-lg bg-linear-to-br from-cyan-500/20 to-teal-500/30 flex items-center justify-center border border-cyan-500/30">
-        <span className="text-cyan-400 font-bold text-sm">L{node.depth}</span>
+      <div className="w-9 h-9 rounded-lg bg-primary-gradient flex items-center justify-center ">
+        <span className="text-[#0d0d0d] font-bold text-sm">L{node.depth}</span>
       </div>
       
       {/* Address */}
@@ -75,9 +75,9 @@ const TreeNodeRow: React.FC<TreeNodeRowProps> = ({
       </div>
       
       {/* Downline count badge */}
-      <div className="px-4 py-1.5 rounded-full border border-cyan-500/40 bg-cyan-500/10">
-        <span className="text-cyan-400 font-medium text-sm">
-          Downline {descendantCount}
+      <div className="px-4 py-1.5 rounded-lg border border-[#00FFD1]/40 bg-[#00FFD1]/10">
+        <span className="text-[#00FFD1] font-medium text-sm">
+          Downline {node.depth===6?'-':`${descendantCount}`}
         </span>
       </div>
     </div>
@@ -103,7 +103,7 @@ const TreeBranch: React.FC<TreeBranchProps> = ({
   
   return (
     <div className="relative">
-      {/* Horizontal connector to node */}
+      {/* Horizontal connector to node
       {node.depth > 0 && (
         <div 
           className="absolute top-5 h-px bg-cyan-500"
@@ -112,7 +112,7 @@ const TreeBranch: React.FC<TreeBranchProps> = ({
             width: '25px'
           }}
         />
-      )}
+      )} */}
       
       {/* Node content with indentation */}
       <div style={{ marginLeft: `${indentLevel * 40}px` }}>
@@ -128,7 +128,7 @@ const TreeBranch: React.FC<TreeBranchProps> = ({
         <div className="relative">
           {/* Vertical line connecting children */}
           <div 
-            className="absolute w-px bg-cyan-500"
+            className="absolute border-dashed border border-[#00FFD1]/50 "
             style={{ 
               left: `${15 + indentLevel * 40}px`,
               top: 0,
@@ -346,7 +346,7 @@ export const DownlineSummary: React.FC = () => {
       <div className="mt-4 mb-4">
         <h4 className="text-white font-semibold mb-1">Downline Summary</h4>
         <p className="text-gray-500 text-sm">
-          Total downline {viewMode === 'demo' ? '(demo)' : ''}: <span className="text-cyan-400 font-semibold">{viewMode === 'demo' ? demoLevelCounts.reduce((a, b) => a + b, 0) : totalDownlineCount}</span>
+          Total downline {viewMode === 'demo' ? '(demo)' : ''}: <span className="text-[#00FFD1] font-semibold">{viewMode === 'demo' ? demoLevelCounts.reduce((a, b) => a + b, 0) : totalDownlineCount}</span>
         </p>
       </div>
 
@@ -389,7 +389,7 @@ export const DownlineSummary: React.FC = () => {
       <div className="flex gap-2 mb-4">
         <button 
           onClick={expandAll}
-          className="px-3 py-1.5 text-xs font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
+          className="px-3 py-1.5 text-xs font-medium text-[#00FFD1] hover:text-[#00FFD1] transition-colors"
         >
           Expand All
         </button>
@@ -403,7 +403,7 @@ export const DownlineSummary: React.FC = () => {
           <button 
             onClick={handleRefresh}
             disabled={isLoading}
-            className="ml-auto px-3 py-1.5 text-xs font-medium text-cyan-400 hover:text-cyan-300 transition-colors disabled:opacity-50"
+            className="ml-auto px-3 py-1.5 text-xs font-medium text-[#00FFD1] hover:text-[#00FFD1] transition-colors disabled:opacity-50"
           >
             {isLoading ? 'Loading...' : 'Refresh'}
           </button>
@@ -413,10 +413,10 @@ export const DownlineSummary: React.FC = () => {
       {/* Tree view */}
       {isLoading && viewMode === 'realtime' ? (
         <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#00FFD1]"></div>
         </div>
       ) : (
-        <div className="bg-[#111111] rounded-xl p-4 overflow-x-auto">
+        <div className="bg-[#00FFD1]/3 rounded-xl p-4 overflow-x-auto">
           {displayTree ? (
             <div className="min-w-fit">
               <TreeBranch 

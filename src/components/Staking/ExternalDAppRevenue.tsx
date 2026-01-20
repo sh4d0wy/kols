@@ -39,7 +39,7 @@ export const ExternalDAppRevenue: React.FC<ExternalDAppRevenueProps> = ({ items 
     <Card className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xs text-gray-500 uppercase tracking-wider font-medium">External DApp Revenue</h3>
-        <div className="w-10 h-10 rounded-xl bg-[#1a1a1a] flex items-center justify-center text-cyan-400">
+        <div className="w-10 h-10 rounded-xl bg-[#1a1a1a] flex items-center justify-center text-[#00FFD1]">
           <GlobeIcon />
         </div>
       </div>

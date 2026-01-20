@@ -58,7 +58,7 @@ export const BundleSales: React.FC<BundleSalesProps> = ({ bundles, onBuy }) => {
                   <span className={`text-xs px-2 py-0.5 rounded-full ${
                     bundle.type === 'elite'
                       ? 'bg-amber-500/20 text-amber-400'
-                      : 'bg-cyan-500/20 text-cyan-400'
+                      : 'bg-cyan-500/20 text-[#00FFD1]'
                   }`}>
                     -{bundle.discount}% OFF
                   </span>
@@ -67,7 +67,7 @@ export const BundleSales: React.FC<BundleSalesProps> = ({ bundles, onBuy }) => {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-cyan-400 font-semibold">{bundle.price} USDT</span>
+              <span className="text-[#00FFD1] font-semibold">{bundle.price} USDT</span>
             </div>
             <Button onClick={() => onBuy(bundle.id)}>Buy</Button>
           </div>

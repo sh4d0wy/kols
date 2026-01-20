@@ -41,7 +41,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
         <div className="flex items-baseline gap-2">
           <span className={`text-3xl font-bold font-mono tracking-tight ${mainValueColor}`}>{mainValue}</span>
           {mainSuffix && (
-            <span className="text-xl font-semibold text-cyan-400">{mainSuffix}</span>
+            <span className="text-xl font-semibold text-[#00FFD1]">{mainSuffix}</span>
           )}
         </div>
         {changeValue && (
@@ -63,7 +63,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
           <div className="flex items-center gap-1">
             <span className="font-semibold text-white font-mono">{secondaryValue}</span>
             {secondarySuffix && (
-              <span className="font-semibold text-cyan-400">{secondarySuffix}</span>
+              <span className="font-semibold text-[#00FFD1]">{secondarySuffix}</span>
             )}
           </div>
         </div>

@@ -48,7 +48,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
       </div>
       <div className="text-right">
         <p className={`font-semibold font-mono ${positive ? 'text-emerald-400' : 'text-white'}`}>
-          {positive && '+'}{amount} <span className="text-cyan-400">{currency}</span>
+          {positive && '+'}{amount} <span className="text-[#00FFD1]">{currency}</span>
         </p>
         <p className="text-gray-500 text-xs">{timestamp}</p>
       </div>

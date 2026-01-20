@@ -7,7 +7,7 @@ interface RuleItemProps {
 }
 
 const CheckIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-cyan-400 flex-shrink-0">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-[#00FFD1] flex-shrink-0">
     <path 
       d="M20 6L9 17L4 12" 
       stroke="currentColor" 
@@ -28,7 +28,7 @@ export const RuleItem: React.FC<RuleItemProps> = ({ text, indent = false, highli
   return (
     <div className={`flex items-start gap-3 ${indent ? 'ml-8' : ''}`}>
       {indent ? <SubCheckIcon /> : <CheckIcon />}
-      <span className={`text-sm leading-relaxed ${highlight ? 'text-cyan-400' : 'text-gray-400'}`}>
+      <span className={`text-sm leading-relaxed ${highlight ? 'text-[#00FFD1]' : 'text-gray-400'}`}>
         {text}
       </span>
     </div>

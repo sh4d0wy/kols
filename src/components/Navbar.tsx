@@ -34,8 +34,8 @@ export const Navbar = () => {
                     <h3 className="text-primary-gradient text-2xl font-bold tracking-wide">KOLS</h3>
                 </div>
                 
-                <div className="border border-cyan-400 rounded-full px-3 py-1">
-                    <span className="text-cyan-400 font-semibold text-sm">7 USDT</span>
+                <div className="border border-[#00FFD1] rounded-full px-3 py-1">
+                    <span className="text-[#00FFD1] font-semibold text-sm">7 USDT</span>
                 </div>
             </div>
 

@@ -90,7 +90,7 @@ export const JoinStructure: React.FC = () => {
         <div className="flex items-center gap-4">
           <button 
             onClick={handleLoadLastJoinedUser}
-            className="text-cyan-400 text-sm cursor-pointer hover:text-cyan-300 transition-colors underline"
+            className="text-[#00FFD1] text-sm cursor-pointer hover:text-[#00FFD1] transition-colors underline"
           >
             Load last joined user
           </button>

@@ -11,14 +11,14 @@ interface StatRowProps {
 
 const valueColors = {
   default: 'text-white',
-  cyan: 'text-cyan-400',
+  cyan: 'text-[#00FFD1]',
   purple: 'text-purple-400',
   green: 'text-emerald-400',
   amber: 'text-amber-400'
 }
 
 const suffixColors = {
-  cyan: 'text-cyan-400',
+  cyan: 'text-[#00FFD1]',
   purple: 'text-purple-400',
   green: 'text-emerald-400',
   amber: 'text-amber-400'

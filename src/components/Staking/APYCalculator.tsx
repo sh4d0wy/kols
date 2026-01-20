@@ -83,7 +83,7 @@ export const APYCalculator: React.FC= () => {
                     <button
                       key={p}
                       onClick={() => { setPeriod(p); setIsOpen(false) }}
-                      className={`w-full px-4 py-3 text-left hover:bg-[#252525] transition-colors ${p === period ? 'text-cyan-400' : 'text-white'}`}
+                      className={`w-full px-4 py-3 text-left hover:bg-[#252525] transition-colors ${p === period ? 'text-[#00FFD1]' : 'text-white'}`}
                     >
                       {p}
                     </button>
@@ -101,12 +101,12 @@ export const APYCalculator: React.FC= () => {
         <div className="space-y-4">
           <div className="bg-linear-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/20 rounded-xl p-5">
             <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Estimated Rewards</p>
-            <p className="text-3xl font-bold text-cyan-400 font-mono">{estimatedRewards.toLocaleString()} <span className="text-xl">USDT</span></p>
+            <p className="text-3xl font-bold text-[#00FFD1] font-mono">{estimatedRewards.toLocaleString()} <span className="text-xl">USDT</span></p>
           </div>
 
           <div className="bg-linear-to-r from-purple-500/10 to-cyan-500/10 border border-purple-500/20 rounded-xl p-5">
             <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Total Value After Period</p>
-            <p className="text-3xl font-bold text-cyan-400 font-mono">{totalValue.toLocaleString()} <span className="text-xl">USDT</span></p>
+            <p className="text-3xl font-bold text-[#00FFD1] font-mono">{totalValue.toLocaleString()} <span className="text-xl">USDT</span></p>
           </div>
         </div>
       </div>

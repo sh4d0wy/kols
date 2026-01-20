@@ -10,7 +10,7 @@ const AddressRow: React.FC<{ label: string; address: string; color: 'cyan' | 'pu
   const [copied, setCopied] = useState(false)
 
   const colorStyles = {
-    cyan: 'text-cyan-400',
+    cyan: 'text-[#00FFD1]',
     purple: 'text-purple-400',
     green: 'text-emerald-400',
   }

@@ -62,7 +62,7 @@ const NFTCard: React.FC<{ nft: NFT; onListForSale: (id: string) => void }> = ({ 
         </span>
       )}
       {nft.tag && (
-        <span className="absolute top-2 left-2 bg-cyan-500/20 text-cyan-400 text-[10px] font-medium px-2 py-0.5 rounded-full z-10">
+        <span className="absolute top-2 left-2 bg-cyan-500/20 text-[#00FFD1] text-[10px] font-medium px-2 py-0.5 rounded-full z-10">
           {nft.tag}
         </span>
       )}
@@ -72,7 +72,7 @@ const NFTCard: React.FC<{ nft: NFT; onListForSale: (id: string) => void }> = ({ 
       <div className="mt-3">
         <div className="flex items-center justify-between mb-2">
           <span className="text-white text-sm font-medium">{nft.name}</span>
-          <span className="text-cyan-400 font-semibold">{nft.price} USDT</span>
+          <span className="text-[#00FFD1] font-semibold">{nft.price} USDT</span>
         </div>
         <Button 
           size="sm" 

@@ -33,16 +33,16 @@ export const StakerItem: React.FC<StakerItemProps> = ({
         </div>
         <div>
           <p className="text-white font-medium text-sm font-mono">{address}</p>
-          <p className={`text-xs ${isYou ? 'text-cyan-400' : 'text-gray-500'}`}>
+          <p className={`text-xs ${isYou ? 'text-[#00FFD1]' : 'text-gray-500'}`}>
             {isYou ? 'You' : label}
           </p>
         </div>
       </div>
       <div className="text-right">
         <p className="font-semibold text-white font-mono">
-          {amount} <span className="text-cyan-400">KOLS</span>
+          {amount} <span className="text-[#00FFD1]">KOLS</span>
         </p>
-        <p className="text-cyan-400 text-xs font-mono">{percentage}</p>
+        <p className="text-[#00FFD1] text-xs font-mono">{percentage}</p>
       </div>
     </div>
   )

@@ -67,7 +67,7 @@ export const GlobalStatistics: React.FC = () => {
             <div className="flex items-center gap-1.5">
               <span className="text-white font-semibold">{stat.value}</span>
               {stat.suffix && (
-                <span className="text-cyan-400 font-semibold">{stat.suffix}</span>
+                <span className="text-[#00FFD1] font-semibold">{stat.suffix}</span>
               )}
             </div>
           </div>

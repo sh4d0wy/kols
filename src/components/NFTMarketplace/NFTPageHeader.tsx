@@ -30,7 +30,7 @@ export const NFTPageHeader: React.FC<NFTPageHeaderProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-[#0D0D0D] border border-[#1a1a1a] rounded-xl p-4">
           <span className="text-gray-500 text-xs uppercase tracking-wider">NETWORK</span>
-          <p className="text-cyan-400 font-semibold mt-1">{network?.toUpperCase()}</p>
+          <p className="text-[#00FFD1] font-semibold mt-1">{network?.toUpperCase()}</p>
         </div>
         <div className="bg-[#0D0D0D] border border-[#1a1a1a] rounded-xl p-4">
           <span className="text-gray-500 text-xs uppercase tracking-wider">CLAIMABLE BADGES</span>
@@ -38,7 +38,7 @@ export const NFTPageHeader: React.FC<NFTPageHeaderProps> = ({
         </div>
         <div className="bg-[#0D0D0D] border border-[#1a1a1a] rounded-xl p-4">
           <span className="text-gray-500 text-xs uppercase tracking-wider">NFT TOKEN</span>
-          <p className="text-cyan-400 font-semibold mt-1">{nftToken}</p>
+          <p className="text-[#00FFD1] font-semibold mt-1">{nftToken}</p>
         </div>
       </div>
     </div>
