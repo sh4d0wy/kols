@@ -1,9 +1,13 @@
 import React from 'react'
 import { Card } from '../ui/Card'
+import { Link, useNavigate } from 'react-router-dom'
 
 interface ComingSoonCardProps {
+  url?: string
   title: string
   description: string
+  metricTitle?: string
+  metricValue?: string
 }
 
 const ArrowIcon = () => (
@@ -13,17 +17,31 @@ const ArrowIcon = () => (
   </svg>
 )
 
-export const ComingSoonCard: React.FC<ComingSoonCardProps> = ({ title, description }) => {
+export const ComingSoonCard: React.FC<ComingSoonCardProps> = ({ url, title, description, metricTitle, metricValue }) => {
   return (
-    <Card className="p-5 hover:border-cyan-500/30 transition-all duration-300 group cursor-pointer">
+    <Link to={url??'/'}>
+    <Card className="p-5 hover:border-cyan-500/30 transition-all duration-300 group cursor-pointer flex flex-col h-full">
       <div className="flex justify-between items-start mb-3">
         <h4 className="text-white font-semibold">{title}</h4>
         <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center text-[#00FFD1] group-hover:bg-cyan-500/30 transition-colors">
           <ArrowIcon />
         </div>
       </div>
-      <p className="text-xs text-gray-500 leading-relaxed">{description}</p>
+      {
+        description && (
+          <p className="text-xs text-gray-500 leading-relaxed mt-auto">{description}</p>
+        )
+      }
+      {
+        metricTitle && metricValue && (
+          <div className="flex items-center justify-between mt-auto">
+            <span className="text-lg text-gray-500">{metricTitle}</span>
+            <span className="text-lg text-white font-mono">{metricValue}</span>
+          </div>
+        )
+      }
     </Card>
+    </Link>
   )
 }
 

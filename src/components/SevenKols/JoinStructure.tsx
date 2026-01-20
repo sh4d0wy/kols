@@ -16,10 +16,12 @@ export const JoinStructure: React.FC = () => {
   const connection = useConnection()
   const {data:lastjoinedData} = useGetLastjoined()
   const {data:userData, isLoading: isLoadingUserData} = use7KolsUserQuery()
-  const [referrerAddress, setReferrerAddress] = useState('')
   const {data:claimableRewardsData} = useGetClaimableRewards()
   const {depositMutation} = useDepositMutation()
   const {message} = useSevenKolsStore()
+
+  const [referrerAddress, setReferrerAddress] = useState('')
+  const [disableInput,setDisableInput] = useState(false)
 
   const claimableRewards = useMemo(() => {
     return claimableRewardsData ? claimableRewardsData : '0'
@@ -31,11 +33,13 @@ export const JoinStructure: React.FC = () => {
       setReferrerAddress(userData.referrer)
     }else if (refParam) {
       if(!isAddress(refParam)) {
-        toast.error('Invalid referrer address')
+        toast.error('Invalid referrer address', { toastId: 'invalid-referrer' })
         return
       }
+      setDisableInput(true)
       setReferrerAddress(refParam)
     }else{
+      setDisableInput(false)
       setReferrerAddress('')
     }
   }, [searchParams, userData?.referrer,connection.address])
@@ -81,6 +85,7 @@ export const JoinStructure: React.FC = () => {
           <input
             type="text"
             value={referrerAddress}
+            disabled={disableInput}
             onChange={(e) => setReferrerAddress(e.target.value)}
             placeholder="Enter referrer address"
             className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-200"

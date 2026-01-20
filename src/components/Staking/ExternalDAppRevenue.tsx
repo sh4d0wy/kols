@@ -10,31 +10,20 @@ const GlobeIcon = () => (
   </svg>
 )
 
-interface DAppItem {
+export interface DAppItem {
+  url?: string
   title: string
-  description: string
+  description?: string
+  metricTitle?: string
+  metricValue?: string
 }
 
 interface ExternalDAppRevenueProps {
   items?: DAppItem[]
 }
 
-const defaultItems: DAppItem[] = [
-  {
-    title: 'Coming Soon #1',
-    description: 'Live revenue data from external DApps will be displayed in this view.'
-  },
-  {
-    title: 'Coming Soon #2',
-    description: 'Multiple external sources will connect here to share real revenue streams.'
-  },
-  {
-    title: 'Coming Soon #3',
-    description: 'Performance of external projects will be reflected in near-real-time.'
-  }
-]
 
-export const ExternalDAppRevenue: React.FC<ExternalDAppRevenueProps> = ({ items = defaultItems }) => {
+export const ExternalDAppRevenue: React.FC<ExternalDAppRevenueProps> = ({ items }) => {
   return (
     <Card className="p-6">
       <div className="flex justify-between items-center mb-6">
@@ -45,11 +34,14 @@ export const ExternalDAppRevenue: React.FC<ExternalDAppRevenueProps> = ({ items 
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {items.map((item, index) => (
+        {items?.map((item, index) => (
           <ComingSoonCard
             key={index}
+            url={item.url??'/'}
             title={item.title}
-            description={item.description}
+            description={item.description??''}
+            metricTitle={item.metricTitle??''}
+            metricValue={item.metricValue??''}
           />
         ))}
       </div>
