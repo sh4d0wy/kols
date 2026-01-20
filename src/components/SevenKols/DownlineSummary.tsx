@@ -34,13 +34,13 @@ const TreeNodeRow: React.FC<TreeNodeRowProps> = ({
   const descendantCount = countDescendants(node)
   
   return (
-    <div className="flex my-3 items-center gap-3 py-2 border-2 border-[#00FFD1]/10 rounded-lg p-4 bg-[#00FFD1]/5">
+    <div className="flex my-3 items-center gap-3 py-2 border border-[#00FFD1]/10 rounded-lg p-4 bg-[#00FFD1]/5">
       {/* Expand/collapse button */}
       <button 
         onClick={onToggle}
         className={`w-6 h-6 rounded flex items-center justify-center transition-all ${
           hasChildren 
-            ? 'bg-[#1a1a1a] border border-[#2a2a2a] hover:border-[#00FFD1]/50 text-gray-400 hover:text-[#00FFD1] cursor-pointer' 
+            ? 'bg-[#00ffd1]/7 border border-[#00FFD1]/10 hover:border-[#00FFD1]/50 text-gray-400 hover:text-[#00FFD1] cursor-pointer' 
             : 'text-transparent cursor-default'
         }`}
         disabled={!hasChildren}

@@ -24,16 +24,16 @@ export const StakingProgress: React.FC= () => {
     <Card className="p-6 h-full">
       <h3 className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-6">Staking Overview</h3>
       
-      <div className="space-y-6">
+      <div className="space-y-3">
         <ProgressBar
           label="Total Rewards Claimed"
           value={Number(poolUtilization)}
-          color="cyan"
+          color="gradient"
         />
         <ProgressBar
           label="Your Stake Contribution"
           value={Number(yourContribution)}
-          color="purple"
+          color="gradient"
         />
         <ProgressBar
           label="Reward Rate"

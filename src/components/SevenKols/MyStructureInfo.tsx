@@ -36,7 +36,7 @@ export const MyStructureInfo: React.FC = () => {
   ]
 
   return (
-    <Card className="p-6 bg-[#00ffd1]/7 border border-[#00ffd1]/10">
+    <Card className="p-6 bg-[#00ffd1]/3 border border-[#00ffd1]/10">
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 rounded-xl bg-primary-gradient flex items-center justify-center">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -55,7 +55,7 @@ export const MyStructureInfo: React.FC = () => {
         {stats.map((stat, index) => (
           <div 
             key={index}
-            className="bg-[#00ffd1]/7 border border-[#00ffd1]/10 rounded-xl p-4"
+            className="bg-[#00ffd1]/3 border border-[#00ffd1]/10 rounded-xl p-4"
           >
             <div className="flex items-center gap-1 mb-2">
               <span className="text-gray-500 text-xs uppercase ">{stat.label}</span>

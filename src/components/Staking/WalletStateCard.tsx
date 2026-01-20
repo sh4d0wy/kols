@@ -39,7 +39,7 @@ export const WalletStateCard = () => {
           suffixColor="cyan"
         />
         
-        <div className="flex justify-between items-center py-3.5 px-4 bg-[#111111] rounded-xl">
+        <div className="flex justify-between items-center py-3.5 px-4 bg-[#00ffd1]/3 border border-[#00ffd1]/10 rounded-xl">
           <span className="text-gray-400 text-sm">Unlock Time</span>
           <span className="text-[#00FFD1]">
             {walletStats?.unlockTime 

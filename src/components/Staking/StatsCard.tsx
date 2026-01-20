@@ -32,7 +32,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
     <Card className="p-5 flex flex-col h-full">
       <div className="flex justify-between items-start mb-4">
         <h3 className="text-xs text-gray-500 uppercase tracking-wider font-medium">{title}</h3>
-        <div className="w-10 h-10 rounded-xl bg-[#1a1a1a] flex items-center justify-center text-gray-400">
+        <div className="w-10 h-10 rounded-xl bg-[#1a1a1a] border border-[#00ffd1]/10 flex items-center justify-center text-white">
           {icon}
         </div>
       </div>
@@ -49,7 +49,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
           <span className="text-xs text-gray-500">{changeLabel}</span>
           <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${
             changePositive 
-              ? 'bg-emerald-500/20 text-emerald-400' 
+              ? 'bg-[#00ffd1]/7 text-[#00ffd1]' 
               : 'bg-red-500/20 text-red-400'
           }`}>
             {changePositive ? '↑' : '↓'} {changeValue}
@@ -57,11 +57,11 @@ export const StatsCard: React.FC<StatsCardProps> = ({
         </div>)}
       </div>
       
-      <div className="mt-auto pt-3 border-t border-[#1a1a1a]">
-        <div className="flex justify-between items-center py-2 px-3 bg-[#111111] rounded-lg">
-          <span className="text-xs text-gray-500">{secondaryLabel}</span>
-          <div className="flex items-center gap-1">
-            <span className="font-semibold text-white font-mono">{secondaryValue}</span>
+      <div className="mt-auto">
+        <div className="flex justify-between items-center py-4 px-3 bg-[#00ffd1]/3 border border-[#00ffd1]/10 rounded-lg">
+          <span className="text-sm text-gray-500">{secondaryLabel}</span>
+          <div className="flex items-center gap-2 justify-end">
+            <span className="font-semibold text-white text-lg font-mono">{secondaryValue}</span>
             {secondarySuffix && (
               <span className="font-semibold text-[#00FFD1]">{secondarySuffix}</span>
             )}

@@ -103,7 +103,7 @@ export const StakingInputCard = () => {
               variant="outline"
               size="sm"
               onClick={handleMax}
-              className="text-xs px-3 py-1.5"
+              className="text-xs px-3 py-1.5 rounded-lg text-[#0d0d0d]"
             >
               MAX
             </Button>

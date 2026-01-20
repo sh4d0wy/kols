@@ -33,7 +33,7 @@ export const StatRow: React.FC<StatRowProps> = ({
   className = ''
 }) => {
   return (
-    <div className={`flex justify-between items-center py-3.5 px-4 bg-[#111111] rounded-xl ${className}`}>
+    <div className={`flex justify-between items-center py-3.5 px-4 bg-[#00ffd1]/3 border border-[#00ffd1]/10 rounded-xl ${className}`}>
       <span className="text-gray-400 text-sm">{label}</span>
       <div className="flex items-center gap-1.5">
         <span className={`font-semibold ${valueColors[valueColor]}`}>{value}</span>

@@ -71,7 +71,7 @@ export const EmailNotification: React.FC<EmailNotificationProps> = ({
           <Button 
             variant="outline"
             onClick={onDelete}
-            className="flex-1"
+            className="flex-1 border-[#00FFD1]/20!"
           >
             Delete
           </Button>

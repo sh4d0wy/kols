@@ -127,7 +127,7 @@ export const JoinStructure: React.FC = () => {
           <Button 
             variant="outline"
             onClick={handleCopyInviteLink}
-            className="flex-1 max-h-12 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 max-h-12 disabled:opacity-50 disabled:cursor-not-allowed border-[#00FFD1]/20!"
             disabled={!userData?.registered}
           >
             Copy my invite link

@@ -24,10 +24,10 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 bg-[#00ffd1]/3 border border-[#00ffd1]/10 rounded-xl p-4">
       <div className="flex justify-between items-center">
         <span className="text-sm text-gray-400">{label}</span>
-        <span className="text-sm font-semibold text-[#00FFD1] font-mono">
+        <span className="text-sm font-semibold text-white font-mono">
           {showPercentage ? `${value}%` : value}
         </span>
       </div>

@@ -57,7 +57,7 @@ export const UplineSection: React.FC<UplineSectionProps> = ({
 
       {isExpanded && (
         <div className="mt-6 space-y-3">
-          <div className="bg-[#00ffd1]/7 border border-[#00ffd1]/10 rounded-2xl p-4 flex cursor-pointer hover:bg-[#1a3a3a] transition-all duration-200 items-center justify-between" onClick={() => {
+          <div className="bg-[#00ffd1]/3 border border-[#00ffd1]/10 rounded-2xl p-4 flex cursor-pointer hover:bg-[#1a3a3a] transition-all duration-200 items-center justify-between" onClick={() => {
             navigate('/')
           }}>
             <div className="flex items-center gap-4">
@@ -82,7 +82,7 @@ export const UplineSection: React.FC<UplineSectionProps> = ({
             return (
             <div
               key={index}
-              className="bg-[#00ffd1]/7 border border-[#00ffd1]/10 rounded-2xl p-4 flex items-center gap-4"
+              className="bg-[#00ffd1]/3 border border-[#00ffd1]/10 rounded-2xl p-4 flex items-center gap-4"
             >
               <span className="text-gray-500 bg-gray-500/20 text-sm font-medium border border-[#2a3a3a] rounded-lg px-3 py-1">U{index + 1}</span>
               <span className="text-white font-mono text-sm">{address}</span>
