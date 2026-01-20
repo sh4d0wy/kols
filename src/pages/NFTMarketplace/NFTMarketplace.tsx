@@ -37,10 +37,18 @@ const NFTMarketplace = () => {
   }
 
   return (
-    <div className="w-full bg-black min-h-screen">
-      <div className="w-[80%] max-w-[1400px] mx-auto pb-10">
-        <Navbar />
-        
+    <div className="w-full bg-black max-h-screen">
+      <div className="w-[80%] max-w-[1400px] mx-auto pb-10 relative">
+        <Navbar className="z-30 relative"/>
+        <div className="fixed flex items-center justify-center top-0 left-0 w-full h-screen bg-black/95 z-20">
+          <div className="w-[600px] h-[300px] rounded-lg bg-[#0D0D0D] border border-[#1a1a1a] flex items-center justify-center px-5">
+            <div className="text-white text-2xl gap-5 font-bold text-center flex flex-col items-center justify-center">
+              <h1>Coming Soon</h1>
+              <p className="text-gray-500 text-lg">The NFT Marketplace will be available soon.</p>
+            </div>
+          </div>
+        </div>
+
         <NFTPageHeader
           claimableBadges={5}
           nftToken="ERC-721"

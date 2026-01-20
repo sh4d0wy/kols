@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom"
 import { ConnectKitButton } from "connectkit"
-export const Navbar = () => {
+export const Navbar = ({ className }: { className?: string }) => {
     const location = useLocation()
     const navItems = [
         {
@@ -23,7 +23,7 @@ export const Navbar = () => {
     }
 
     return (
-        <div className="w-full flex justify-between items-center bg-[#0D0D0D] border border-[#1a1a1a] rounded-xl px-6 py-3 mt-4">
+        <div className={`w-full flex justify-between items-center bg-[#0D0D0D] border border-[#1a1a1a] rounded-xl px-6 py-3 mt-4 ${className}`}>
             <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                     <div className="p-1.5 rounded-lg">
