@@ -6,7 +6,6 @@ import {
   StakingInputCard,
   RewardsManagement,
   FeeStructure,
-  APYCalculator,
   StakingProgress,
   NetworkStats,
   ExternalDAppRevenue,

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card } from '../ui/Card'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 interface ComingSoonCardProps {
   url?: string
