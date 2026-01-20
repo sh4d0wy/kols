@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Card } from '../ui/Card'
 import { useGlobalQuery } from '@/hooks/staking/queries/useGlobalQuery'
+import { motion, AnimatePresence } from 'motion/react'
 
 const CalculatorIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -77,19 +78,30 @@ export const APYCalculator: React.FC= () => {
                   <polyline points="6 9 12 15 18 9" />
                 </svg>
               </button>
-              {isOpen && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden z-10">
-                  {periods.map((p) => (
-                    <button
-                      key={p}
-                      onClick={() => { setPeriod(p); setIsOpen(false) }}
-                      className={`w-full px-4 py-3 text-left hover:bg-[#252525] transition-colors ${p === period ? 'text-[#00FFD1]' : 'text-white'}`}
-                    >
-                      {p}
-                    </button>
-                  ))}
-                </div>
-              )}
+              <AnimatePresence>
+                {isOpen && (
+                  <motion.div 
+                    className="absolute top-full left-0 right-0 mt-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden z-10"
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                  >
+                    {periods.map((p, index) => (
+                      <motion.button
+                        key={p}
+                        onClick={() => { setPeriod(p); setIsOpen(false) }}
+                        className={`w-full px-4 py-3 text-left hover:bg-[#252525] transition-colors ${p === period ? 'text-[#00FFD1]' : 'text-white'}`}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.15, delay: index * 0.03 }}
+                      >
+                        {p}
+                      </motion.button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
 

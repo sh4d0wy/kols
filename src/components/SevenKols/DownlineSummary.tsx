@@ -3,6 +3,7 @@ import { Card } from '../ui'
 import { useDownlineData } from '@/hooks/7kols/queries/useDownlineData'
 import { useConnection } from 'wagmi'
 import type { TreeNode } from '@/types/7kols/downlineData'
+import { motion, AnimatePresence } from 'motion/react'
 
 const levels = [
   { id: 1, label: 'L1' },
@@ -124,28 +125,42 @@ const TreeBranch: React.FC<TreeBranchProps> = ({
         />
       </div>
       
-      {hasChildren && isExpanded && (
-        <div className="relative">
-          {/* Vertical line connecting children */}
-          <div 
-            className="absolute border-dashed border border-[#00FFD1]/50 "
-            style={{ 
-              left: `${15 + indentLevel * 40}px`,
-              top: 0,
-              bottom: 0
-            }}
-          />
-          {node.children.map((child, index) => (
-            <TreeBranch
-              key={`${nodeId}-${index}`}
-              node={child}
-              nodeId={`${nodeId}-${index}`}
-              expandedNodes={expandedNodes}
-              toggleNode={toggleNode}
+      <AnimatePresence>
+        {hasChildren && isExpanded && (
+          <motion.div 
+            className="relative overflow-hidden"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+          >
+            {/* Vertical line connecting children */}
+            <div 
+              className="absolute border-dashed border border-[#00FFD1]/50 "
+              style={{ 
+                left: `${15 + indentLevel * 40}px`,
+                top: 0,
+                bottom: 0
+              }}
             />
-          ))}
-        </div>
-      )}
+            {node.children.map((child, index) => (
+              <motion.div
+                key={`${nodeId}-${index}`}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2, delay: index * 0.05 }}
+              >
+                <TreeBranch
+                  node={child}
+                  nodeId={`${nodeId}-${index}`}
+                  expandedNodes={expandedNodes}
+                  toggleNode={toggleNode}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -340,104 +355,138 @@ export const DownlineSummary: React.FC = () => {
         </button>
       </div>
 
-      {isCardExpanded && (
-        <>
-      {/* Downline Summary */}
-      <div className="mt-4 mb-4">
-        <h4 className="text-white font-semibold mb-1">Downline Summary</h4>
-        <p className="text-gray-500 text-sm">
-          Total downline {viewMode === 'demo' ? '(demo)' : ''}: <span className="text-[#00FFD1] font-semibold">{viewMode === 'demo' ? demoLevelCounts.reduce((a, b) => a + b, 0) : totalDownlineCount}</span>
-        </p>
-      </div>
-
-      {/* Level pills */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {levels.map((level) => (
-          <div
-            key={level.id}
-            className="px-3 py-1.5 rounded-full text-xs font-medium bg-[#1a1a1a] text-gray-400 border border-[#2a2a2a]"
+      <AnimatePresence>
+        {isCardExpanded && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            className="overflow-hidden"
           >
-            {level.label}: {viewMode === 'demo' ? demoLevelCounts[level.id - 1] : (levelCounts[level.id] ?? 0)}
-          </div>
-        ))}
-      </div>
+            {/* Downline Summary */}
+            <motion.div 
+              className="mt-4 mb-4"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: 0.1 }}
+            >
+              <h4 className="text-white font-semibold mb-1">Downline Summary</h4>
+              <p className="text-gray-500 text-sm">
+                Total downline {viewMode === 'demo' ? '(demo)' : ''}: <span className="text-[#00FFD1] font-semibold">{viewMode === 'demo' ? demoLevelCounts.reduce((a, b) => a + b, 0) : totalDownlineCount}</span>
+              </p>
+            </motion.div>
 
-      {/* View mode toggle */}
-      <div className="flex gap-3 mb-6">
-        <button 
-          onClick={() => setViewMode('realtime')}
-          className={`flex-1 py-3 px-4 rounded-full text-sm font-medium transition-all ${
-            viewMode === 'realtime'
-              ? 'bg-primary-gradient text-[#0D0D0D]'
-              : 'bg-[#1a1a1a] border border-[#2a2a2a] text-gray-400 hover:text-white'
-          }`}
-        >
-          Real Time (contract)
-        </button>
-        <button 
-          onClick={() => setViewMode('demo')}
-          className={`flex-1 py-3 px-4 rounded-full text-sm font-medium transition-all ${
-            viewMode === 'demo'
-              ? 'bg-primary-gradient text-[#0D0D0D]'
-              : 'bg-[#1a1a1a] border border-[#2a2a2a] text-gray-400 hover:text-white'
-          }`}
-        >
-          Demo Tree (mock)
-        </button>
-      </div>
+            {/* Level pills */}
+            <motion.div 
+              className="flex flex-wrap gap-2 mb-4"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: 0.15 }}
+            >
+              {levels.map((level) => (
+                <div
+                  key={level.id}
+                  className="px-3 py-1.5 rounded-full text-xs font-medium bg-[#1a1a1a] text-gray-400 border border-[#2a2a2a]"
+                >
+                  {level.label}: {viewMode === 'demo' ? demoLevelCounts[level.id - 1] : (levelCounts[level.id] ?? 0)}
+                </div>
+              ))}
+            </motion.div>
 
-      <div className="flex gap-2 mb-4">
-        <button 
-          onClick={expandAll}
-          className="px-3 py-1.5 text-xs font-medium text-[#00FFD1] hover:text-[#00FFD1] transition-colors"
-        >
-          Expand All
-        </button>
-        <button 
-          onClick={collapseAll}
-          className="px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-white transition-colors"
-        >
-          Collapse All
-        </button>
-        {viewMode === 'realtime' && (
-          <button 
-            onClick={handleRefresh}
-            disabled={isLoading}
-            className="ml-auto px-3 py-1.5 text-xs font-medium text-[#00FFD1] hover:text-[#00FFD1] transition-colors disabled:opacity-50"
-          >
-            {isLoading ? 'Loading...' : 'Refresh'}
-          </button>
+            {/* View mode toggle */}
+            <motion.div 
+              className="flex gap-3 mb-6"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: 0.2 }}
+            >
+              <button 
+                onClick={() => setViewMode('realtime')}
+                className={`flex-1 py-3 px-4 rounded-full text-sm font-medium transition-all ${
+                  viewMode === 'realtime'
+                    ? 'bg-primary-gradient text-[#0D0D0D]'
+                    : 'bg-[#1a1a1a] border border-[#2a2a2a] text-gray-400 hover:text-white'
+                }`}
+              >
+                Real Time (contract)
+              </button>
+              <button 
+                onClick={() => setViewMode('demo')}
+                className={`flex-1 py-3 px-4 rounded-full text-sm font-medium transition-all ${
+                  viewMode === 'demo'
+                    ? 'bg-primary-gradient text-[#0D0D0D]'
+                    : 'bg-[#1a1a1a] border border-[#2a2a2a] text-gray-400 hover:text-white'
+                }`}
+              >
+                Demo Tree (mock)
+              </button>
+            </motion.div>
+
+            <motion.div 
+              className="flex gap-2 mb-4"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: 0.25 }}
+            >
+              <button 
+                onClick={expandAll}
+                className="px-3 py-1.5 text-xs font-medium text-[#00FFD1] hover:text-[#00FFD1] transition-colors"
+              >
+                Expand All
+              </button>
+              <button 
+                onClick={collapseAll}
+                className="px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-white transition-colors"
+              >
+                Collapse All
+              </button>
+              {viewMode === 'realtime' && (
+                <button 
+                  onClick={handleRefresh}
+                  disabled={isLoading}
+                  className="ml-auto px-3 py-1.5 text-xs font-medium text-[#00FFD1] hover:text-[#00FFD1] transition-colors disabled:opacity-50"
+                >
+                  {isLoading ? 'Loading...' : 'Refresh'}
+                </button>
+              )}
+            </motion.div>
+
+            {/* Tree view */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: 0.3 }}
+            >
+              {isLoading && viewMode === 'realtime' ? (
+                <div className="flex justify-center items-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#00FFD1]"></div>
+                </div>
+              ) : (
+                <div className="bg-[#00FFD1]/3 rounded-xl p-4 overflow-x-auto">
+                  {displayTree ? (
+                    <div className="min-w-fit">
+                      <TreeBranch 
+                        node={displayTree}
+                        nodeId="root"
+                        expandedNodes={expandedNodes}
+                        toggleNode={toggleNode}
+                      />
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      {viewMode === 'realtime' 
+                        ? 'Connect your wallet to view your downline tree'
+                        : 'No tree data available'
+                      }
+                    </div>
+                  )}
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
         )}
-      </div>
-
-      {/* Tree view */}
-      {isLoading && viewMode === 'realtime' ? (
-        <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#00FFD1]"></div>
-        </div>
-      ) : (
-        <div className="bg-[#00FFD1]/3 rounded-xl p-4 overflow-x-auto">
-          {displayTree ? (
-            <div className="min-w-fit">
-              <TreeBranch 
-                node={displayTree}
-                nodeId="root"
-                expandedNodes={expandedNodes}
-                toggleNode={toggleNode}
-              />
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              {viewMode === 'realtime' 
-                ? 'Connect your wallet to view your downline tree'
-                : 'No tree data available'
-              }
-            </div>
-          )}
-        </div>
-      )}
-        </>
-      )}
+      </AnimatePresence>
     </Card>
   )
 }

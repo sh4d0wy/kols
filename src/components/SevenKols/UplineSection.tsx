@@ -4,17 +4,14 @@ import { useNavigate } from 'react-router-dom'
 import { useUplineQuery } from '@/hooks/7kols/queries/useUplineQuery'
 import {use7KolsUserQuery} from '@/hooks/7kols/queries/use7kolsUserQuery'
 import { ZeroAddress } from 'ethers'
+import { motion, AnimatePresence } from 'motion/react'
 
 interface UplineSectionProps {
   title?: string
-  stakeAddress?: string
-  uplineAddresses?: string[]
-  onGoToStaking?: () => void
 }
 
 export const UplineSection: React.FC<UplineSectionProps> = ({
   title = 'Upline (Staking + Top 6)',
-  onGoToStaking,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const connection = useConnection()
@@ -55,41 +52,56 @@ export const UplineSection: React.FC<UplineSectionProps> = ({
         </svg>
       </button>
 
-      {isExpanded && (
-        <div className="mt-6 space-y-3">
-          <div className="bg-[#00ffd1]/3 border border-[#00ffd1]/10 rounded-2xl p-4 flex cursor-pointer hover:bg-[#1a3a3a] transition-all duration-200 items-center justify-between" onClick={() => {
-            navigate('/')
-          }}>
-            <div className="flex items-center gap-4">
-              <span className="bg-purple-500 text-white text-sm font-bold px-5 py-2 rounded-lg uppercase tracking-wider">
-                Stake
-              </span>
-              <span className="text-white font-mono text-sm">{userAddress}</span>
-            </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                navigate('/')
-              }}
-              className="bg-transparent border border-[#00ffd1] text-[#00ffd1] px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#00ffd1]/10 transition-colors"
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div 
+            className="mt-6 space-y-3 overflow-hidden"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+          >
+            <motion.div 
+              className="bg-[#00ffd1]/3 border border-[#00ffd1]/10 rounded-2xl p-4 flex cursor-pointer hover:bg-[#1a3a3a] transition-all duration-200 items-center justify-between" 
+              onClick={() => navigate('/')}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: 0.1 }}
             >
-              Go to staking
-            </button>
-          </div>
+              <div className="flex items-center gap-4">
+                <span className="bg-purple-500 text-white text-sm font-bold px-5 py-2 rounded-lg uppercase tracking-wider">
+                  Stake
+                </span>
+                <span className="text-white font-mono text-sm">{userAddress}</span>
+              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  navigate('/')
+                }}
+                className="bg-transparent border border-[#00ffd1] text-[#00ffd1] px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#00ffd1]/10 transition-colors"
+              >
+                Go to staking
+              </button>
+            </motion.div>
 
-          {userData?.registered && uplineData?.map((address, index) => {
-            if(address === ZeroAddress) return null;
-            return (
-            <div
-              key={index}
-              className="bg-[#00ffd1]/3 border border-[#00ffd1]/10 rounded-2xl p-4 flex items-center gap-4"
-            >
-              <span className="text-gray-500 bg-gray-500/20 text-sm font-medium border border-[#2a3a3a] rounded-lg px-3 py-1">U{index + 1}</span>
-              <span className="text-white font-mono text-sm">{address}</span>
-            </div>
-          )})}
-        </div>
-      )}
+            {userData?.registered && uplineData?.map((address, index) => {
+              if(address === ZeroAddress) return null;
+              return (
+              <motion.div
+                key={index}
+                className="bg-[#00ffd1]/3 border border-[#00ffd1]/10 rounded-2xl p-4 flex items-center gap-4"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, delay: 0.1 + (index + 1) * 0.05 }}
+              >
+                <span className="text-gray-500 bg-gray-500/20 text-sm font-medium border border-[#2a3a3a] rounded-lg px-3 py-1">U{index + 1}</span>
+                <span className="text-white font-mono text-sm">{address}</span>
+              </motion.div>
+            )})}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
