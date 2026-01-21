@@ -1,6 +1,6 @@
 import React from 'react'
 import { useConnection } from 'wagmi'
-
+import { motion } from 'motion/react'
 interface NFTPageHeaderProps {
   claimableBadges: number
   nftToken: string
@@ -15,8 +15,11 @@ export const NFTPageHeader: React.FC<NFTPageHeaderProps> = ({
   const network = connection.chain?.name
 
   return (
-    <div className="mt-6">
-      {/* Title */}
+    <motion.div className="mt-6"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}>
+        {/* Title */}
       <h1 className="text-4xl md:text-5xl font-bold mb-2">
         <span className="text-primary-gradient">KOLS Participation NFT Badge</span>
       </h1>
@@ -41,7 +44,7 @@ export const NFTPageHeader: React.FC<NFTPageHeaderProps> = ({
           <p className="text-[#00FFD1] font-semibold mt-1">{nftToken}</p>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 

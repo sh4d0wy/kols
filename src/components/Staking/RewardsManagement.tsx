@@ -51,7 +51,7 @@ export const RewardsManagement: React.FC = () => {
   const { claimRewards, requestUnstake, withdrawUnstaked, claimAndUnstake } = useStakingContractMutations();
 
   const isClaimable = useMemo(() => {
-    return walletStats?.isActive && Number(walletStats?.withdrawableRewards) > 0;
+    return Number(walletStats?.withdrawableRewards) > 0;
   }, [walletStats]);
 
   const isRequestable = useMemo(() => {
@@ -59,11 +59,11 @@ export const RewardsManagement: React.FC = () => {
   }, [walletStats]);
 
   const isWithdrawable = useMemo(() => {
-    return walletStats?.isActive && Number(walletStats?.pendingUnstake) > 0 && !walletStats?.isUnstaking && ((walletStats?.unlockTime ?? 0) < Date.now()/1000);
+    return Number(walletStats?.pendingUnstake) > 0 && ((walletStats?.unlockTime ?? 0) < Date.now()/1000);
   }, [walletStats]);
   
   const isClaimableAndUnstakable = useMemo(() => {
-    return isClaimable && Number(walletStats?.pendingUnstake) > 0 && !walletStats?.isUnstaking && ((walletStats?.unlockTime ?? 0) >= Date.now()/1000);
+    return isClaimable && Number(walletStats?.pendingUnstake) > 0 && ((walletStats?.unlockTime ?? 0) >= Date.now()/1000);
   }, [walletStats]);
   return (
     <Card className="p-6">

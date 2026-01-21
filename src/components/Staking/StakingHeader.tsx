@@ -1,6 +1,6 @@
 // import { useGlobalQuery } from '@/hooks/staking/queries/useGlobalQuery'
 import React from 'react'
-
+import {motion} from 'motion/react'
 interface StakingHeaderProps {
   title?: string
   subtitle?: string
@@ -13,7 +13,12 @@ export const StakingHeader: React.FC<StakingHeaderProps> = ({
   // const {data:globalStats} = useGlobalQuery();
   // const apy = parseFloat(globalStats?.apy??'0')
   return (
-    <div className="flex justify-between items-start mb-8 mt-8">
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="flex justify-between items-start mb-8 mt-8"
+    >
       <div>
         <h1 className="text-4xl md:text-5xl font-bold text-primary-gradient font-syne mb-2">
           {title}
@@ -32,7 +37,7 @@ export const StakingHeader: React.FC<StakingHeaderProps> = ({
           <p className="text-2xl font-bold text-white font-mono">{tvl}</p>
         </div> */}
       </div>
-    </div>
+    </motion.div>
   )
 }
 
