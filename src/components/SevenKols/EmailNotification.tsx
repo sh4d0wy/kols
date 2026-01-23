@@ -1,23 +1,62 @@
 import React, { useState } from 'react'
 import { Card, Button } from '../ui'
+import { registerEmail, resetEmail } from '@/api/userRoutes'
+import { useConnection,useSignMessage } from 'wagmi'
+import { toast } from 'react-toastify'
+import type { RegisterEmailParams, ResetEmailParams } from '@/types/api/userRouterTypes'
 
-interface EmailNotificationProps {
-  onSendEmail: (email: string) => void
-  onDelete: () => void
-  defaultEmail?: string
-}
-
-export const EmailNotification: React.FC<EmailNotificationProps> = ({
-  onSendEmail,
-  onDelete,
-  defaultEmail = '',
-}) => {
-  const [email, setEmail] = useState(defaultEmail)
+export const EmailNotification: React.FC = () => {
+  const [email, setEmail] = useState('')
   const [consentChecked, setConsentChecked] = useState(false)
+  const connection = useConnection()
+  const signMessage = useSignMessage()
 
-  const handleSend = () => {
-    if (email && consentChecked) {
-      onSendEmail(email)
+  const handleSend = async () => {
+    try{
+      if(!connection.address) return;
+      console.log("Connection address:", connection.address)
+      console.log("Email:", email)
+      const message = "Register your email for notifications"
+      const signature = await signMessage.mutateAsync({ message })
+      if(!signature) return;
+      console.log("Signature:", signature)
+      const data: RegisterEmailParams = {
+        walletAddress: connection.address,
+        email: email,
+        message: message,
+        signature: signature,
+        timestamp: Date.now()
+      }
+      console.log("Data:", data)
+      await registerEmail(data)
+      console.log("Email registered successfully")
+      toast.success('Email registered successfully')
+    }
+    catch(error){
+      console.error(error)
+      toast.error('Failed to register email')
+    }
+  }
+
+  const handleDelete = async () => {
+    try{
+      if(!connection.address) return
+      const message = "You are about to delete your email notification"
+      const signature = await signMessage.mutateAsync({ message })
+      if(!signature) return;
+
+      const data: ResetEmailParams = {
+        walletAddress: connection.address,
+        message: message,
+        signature: signature,
+        timestamp: Date.now()
+      }
+      await resetEmail(data)
+      toast.success('Email deleted successfully')
+    }
+    catch(error){
+      console.error(error)
+      toast.error('Failed to delete email')
     }
   }
 
@@ -70,7 +109,7 @@ export const EmailNotification: React.FC<EmailNotificationProps> = ({
           </Button>
           <Button 
             variant="outline"
-            onClick={onDelete}
+            onClick={handleDelete}
             className="flex-1 border-[#00FFD1]/20!"
           >
             Delete
