@@ -4,7 +4,7 @@ import { SevenKols } from "./pages/SevenKols";
 import { NFTMarketplace } from "./pages/NFTMarketplace";
 import { Web3Provider } from "./config/Web3Provider";
 import { ToastContainer } from "react-toastify";
-import { Bounce } from "react-toastify";
+import { Bounce } from "react-toastify"
 
 function App() {
   return (
