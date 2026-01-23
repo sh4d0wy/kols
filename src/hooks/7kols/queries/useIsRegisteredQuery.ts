@@ -5,19 +5,17 @@ import { useCallback } from "react";
 
 export const useIsRegisteredQuery = () => {
     const connection = useConnection();
-    const fetchIsRegistered = useCallback(async (): Promise<boolean> => {
-        if(!connection.address) return false;
+    const fetchIsRegistered = useCallback(async (): Promise<{verified:boolean,status:string} | null> => {
+        if(!connection.address) return null;
         console.log("Connection address", connection.address);
         try{
             const response = await isUserRegistered(connection.address);
-            console.log("Response", response);
-            return true;
+            return {verified:response.verified,status:response.status};
         }
         catch(error){
-            return false;
+            return null;
         }
     }, [connection.address]);
-
     return useQuery({
         queryKey: ['is-registered', connection.address],
         queryFn: async () => await fetchIsRegistered(),

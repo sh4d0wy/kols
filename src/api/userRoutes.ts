@@ -3,7 +3,7 @@ import type { RegisterEmailParams, ResetEmailParams } from "@/types/api/userRout
 
 export const isUserRegistered = async (walletAddress: `0x${string}`) => {
     const response = await api.get(`/user/${walletAddress}`);
-    return response.status;
+    return response.data;
 };
 export const registerEmail = async (params: RegisterEmailParams) => {
     try{

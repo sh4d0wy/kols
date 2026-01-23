@@ -8,14 +8,18 @@ import { useIsRegisteredQuery } from '@/hooks/7kols/queries/useIsRegisteredQuery
 import { useQueryClient } from '@tanstack/react-query'
 
 export const EmailNotification: React.FC = () => {
-  const [email, setEmail] = useState('')
-  const [consentChecked, setConsentChecked] = useState(false)
-  const connection = useConnection()
-  const signMessage = useSignMessage()
-  const queryClient = useQueryClient()
+  const [email, setEmail] = useState('');
+  const [consentChecked, setConsentChecked] = useState(false);
+  const connection = useConnection();
+  const signMessage = useSignMessage();
+  const queryClient = useQueryClient();
+
   const handleSend = async () => {
     try{
-      if(!connection.address) return;
+      if(!connection.address) {
+        toast.error('Please connect your wallet')
+        return;
+      };
       const message = "Register your email for notifications"
       const signature = await signMessage.mutateAsync({ message })
       if(!signature) return;
@@ -62,7 +66,8 @@ export const EmailNotification: React.FC = () => {
   const {data: isRegisteredData} = useIsRegisteredQuery()
 
   const isRegistered = useMemo(() => {
-    return isRegisteredData ? isRegisteredData : false
+    console.log("Is registered data", isRegisteredData)
+    return isRegisteredData ? isRegisteredData.verified : false
   }, [isRegisteredData])
   console.log("Is registered", isRegistered)
   
@@ -93,6 +98,9 @@ export const EmailNotification: React.FC = () => {
             placeholder="example@mail.com"
             className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-200"
           />
+          {isRegisteredData?.status==='PENDING' && (
+          <p className="text-emerald-500 text-sm mt-5">Email sent for verification, please check your email</p>
+          )}
         </div>
 
         <label className="flex items-center justify-start gap-3 cursor-pointer">
@@ -115,7 +123,7 @@ export const EmailNotification: React.FC = () => {
           {!isRegistered && <>  
             <Button 
             onClick={handleSend}
-            disabled={!email || !consentChecked}
+            disabled={!email || !consentChecked || isRegisteredData?.status==='PENDING'}
             className="flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Register Email
