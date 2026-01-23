@@ -129,6 +129,19 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+/* Custom checkbox styling */
+input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 3px;
+  height: 6px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+}
+
 /* Animation utilities */
 @keyframes pulse-glow {
   0%, 100% {

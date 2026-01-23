@@ -1,6 +1,10 @@
 import api from ".";
 import type { RegisterEmailParams, ResetEmailParams } from "@/types/api/userRouterTypes";
 
+export const isUserRegistered = async (walletAddress: `0x${string}`) => {
+    const response = await api.get(`/user/${walletAddress}`);
+    return response.status;
+};
 export const registerEmail = async (params: RegisterEmailParams) => {
     try{
         const response = await api.post("/user/register", params);
