@@ -10,6 +10,7 @@ import {
   ContractInformation,
   NFTFooter,
 } from '../../components/NFTMarketplace'
+import { NFT_CONTRACT_ADDRESS } from '@/utils/nftdata'
 
 const NFTMarketplace = () => {
   const handleGenerateBadge = () => {
@@ -40,21 +41,20 @@ const NFTMarketplace = () => {
     <div className="w-full bg-black max-h-screen">
       <div className="w-[80%] max-w-[1400px] mx-auto pb-10 relative">
         <Navbar className="z-30 relative"/>
-        <div className="fixed flex items-center justify-center top-0 left-0 w-full h-screen bg-black/95 z-20">
+        {/* <div className="fixed flex items-center justify-center top-0 left-0 w-full h-screen bg-black/95 z-20">
           <div className="w-[600px] h-[300px] rounded-lg bg-[#0D0D0D] border border-[#1a1a1a] flex items-center justify-center px-5">
             <div className="text-white text-2xl gap-5 font-bold text-center flex flex-col items-center justify-center">
               <h1>Coming Soon</h1>
               <p className="text-gray-500 text-lg">The NFT Marketplace will be available soon.</p>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <NFTPageHeader
-          claimableBadges={5}
-          nftToken="ERC-721"
+          nftToken={NFT_CONTRACT_ADDRESS}
         />
 
-        <div className="mt-6">
+        {/* <div className="mt-6">
           <GenerateNFTs
             data={{
               totalGenerated: 1245,
@@ -64,58 +64,24 @@ const NFTMarketplace = () => {
             }}
             onGenerate={handleGenerateBadge}
           />
-        </div>
+        </div> */}
 
         <div className="mt-6">
-          <ClaimParticipationBadge
-            data={{
-              totalParticipation: 12,
-              alreadyMinted: 7,
-              claimableAmount: 5,
-            }}
-            onMint={handleMintBadges}
-          />
+          <ClaimParticipationBadge />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-          <MyNFTs
-            nfts={[
-              { id: '002', name: 'Badge #002', price: 50, image: 'gold', isNew: true },
-              { id: '003', name: 'Badge #003', price: 30, image: 'silver' },
-              { id: '004', name: 'Badge #003', price: 100, image: 'physical', tag: 'Referen' },
-            ]}
-            onListForSale={handleListForSale}
-          />
+          <MyNFTs/>
           
           <div className="space-y-6">
-            <SingleSales
-              listings={[
-                { id: '001', name: 'Badge #001', price: 25, status: 'verified', seller: 'Verified' },
-                { id: '002', name: 'Badge #002', price: 0, status: 'pending', seller: 'Pending' },
-                { id: '003', name: 'Badge #003', price: 45, status: 'verified', seller: 'Verified' },
-              ]}
-              onBuy={handleBuyNFT}
-            />
+            <SingleSales />
             
-            <BundleSales
-              bundles={[
-                { id: 'elite', name: 'Elite Bundle', price: 180, discount: 20, count: 5, type: 'elite' },
-                { id: 'starter', name: 'Starter Bundle', price: 90, discount: 10, count: 3, type: 'starter' },
-              ]}
-              onBuy={handleBuyBundle}
-            />
+            <BundleSales />
           </div>
         </div>
 
         <div className="mt-6">
-          <CreateBundleSale
-            availableNFTs={[
-              { id: '001', name: 'Badge #001', variant: 'Gold' },
-              { id: '002', name: 'Badge #002', variant: 'Silver' },
-              { id: '003', name: 'Badge #003', variant: 'Platinum' },
-            ]}
-            onCreateBundle={handleCreateBundle}
-          />
+          <CreateBundleSale/>
         </div>
 
         <div className="mt-6">

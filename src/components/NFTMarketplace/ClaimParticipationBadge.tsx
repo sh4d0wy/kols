@@ -1,18 +1,23 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Card, Button } from '../ui'
+import useUserNftDataQuery from '@/hooks/nftbadge/queries/useUserNftDataQuery'
+import { useClaimNftMutation } from '@/hooks/nftbadge/mutations/useClaimNftMutation'
+import { ClipLoader } from 'react-spinners'
 
-interface ClaimParticipationBadgeData {
-  totalParticipation: number
-  alreadyMinted: number
-  claimableAmount: number
-}
+export const ClaimParticipationBadge: React.FC = () => {
+  const {data: userNftBadgeData} = useUserNftDataQuery()
+  const {claimNftMutation} = useClaimNftMutation()
+  const userData = useMemo(()=>{
+    return userNftBadgeData ? {
+      totalParticipation: userNftBadgeData.totalParticipation,
+      alreadyMinted: userNftBadgeData.alreadyMinted,
+      claimableAmount: userNftBadgeData.claimableNftBadges,
+    } : null
+  }, [userNftBadgeData])
 
-interface ClaimParticipationBadgeProps {
-  data: ClaimParticipationBadgeData
-  onMint: () => void
-}
-
-export const ClaimParticipationBadge: React.FC<ClaimParticipationBadgeProps> = ({ data, onMint }) => {
+  const handleMint = () => {
+    claimNftMutation.mutate()
+  }
   return (
     <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
@@ -28,10 +33,14 @@ export const ClaimParticipationBadge: React.FC<ClaimParticipationBadgeProps> = (
           </div>
         </div>
         <Button 
-          onClick={onMint}
-          className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700"
+          onClick={handleMint}
+          className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={claimNftMutation.isPending || userData?.claimableAmount === 0}
         >
-          Mint Claimable Badges
+          {claimNftMutation.isPending ? <>
+            Minting NFTs...{' '}
+            <ClipLoader color="white" size={16} loading={claimNftMutation.isPending} />
+          </> : userData?.claimableAmount === 0 ? 'No Claimable Badges' : 'Mint Claimable Badges'}
         </Button>
       </div>
 
@@ -42,28 +51,16 @@ export const ClaimParticipationBadge: React.FC<ClaimParticipationBadgeProps> = (
       <div className="grid grid-cols-3 gap-4 mb-4">
         <div className="bg-[#111111] rounded-xl p-4">
           <span className="text-gray-500 text-xs uppercase tracking-wider">TOTAL PARTICIPATION (UNILEVEL)</span>
-          <p className="text-white text-2xl font-bold mt-1">{data.totalParticipation}</p>
+          <p className="text-white text-2xl font-bold mt-1">{userData?.totalParticipation}</p>
         </div>
         <div className="bg-[#111111] rounded-xl p-4">
           <span className="text-gray-500 text-xs uppercase tracking-wider">ALREADY MINTED NFTS</span>
-          <p className="text-emerald-400 text-2xl font-bold mt-1">{data.alreadyMinted}</p>
+          <p className="text-emerald-400 text-2xl font-bold mt-1">{userData?.alreadyMinted}</p>
         </div>
         <div className="bg-[#111111] rounded-xl p-4">
           <span className="text-gray-500 text-xs uppercase tracking-wider">CLAIMABLE NFT AMOUNT</span>
-          <p className="text-purple-400 text-2xl font-bold mt-1">{data.claimableAmount}</p>
+          <p className="text-purple-400 text-2xl font-bold mt-1">{userData?.claimableAmount}</p>
         </div>
-      </div>
-
-      {/* Warning Notice */}
-      <div className="flex items-center gap-2 px-4 py-3 bg-amber-500/10 border border-amber-500/20 rounded-xl">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-amber-400 flex-shrink-0">
-          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-          <path d="M12 8V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-          <circle cx="12" cy="16" r="1" fill="currentColor"/>
-        </svg>
-        <span className="text-amber-400 text-sm">
-          Badge minting does not work if UniLevel507 contract address is not set.
-        </span>
       </div>
     </Card>
   )

@@ -1,22 +1,32 @@
-import React from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import { Card, Button } from '../ui'
+import { useGetSingleListings } from '@/hooks/nftbadge/queries/useGetSingleListings'
+import { Loader2 } from 'lucide-react'
+import { formatUnits } from 'ethers'
+import type { NFTListing } from '@/types/NftMarketplace/nfttype'
+import { useBuyNftBadge } from '@/hooks/nftbadge/mutations/useBuyNftBadge'
 
-interface Listing {
-  id: string
-  name: string
-  price: number
-  status: 'verified' | 'pending'
-  seller: string
-}
 
-interface SingleSalesProps {
-  listings: Listing[]
-  onBuy: (id: string) => void
-}
+export const SingleSales: React.FC = () => {
+  const {data: listingsData, isLoading: listingsLoading} = useGetSingleListings();
+  const buyNftBadgeMutation = useBuyNftBadge();
+  const activeListings: NFTListing[] = useMemo(() => {
+    return listingsData?.filter((listing) => listing.active) as NFTListing[];
+  }, [listingsData]);
 
-export const SingleSales: React.FC<SingleSalesProps> = ({ listings, onBuy }) => {
+  const nftBadgeBuying = useRef<string | null>(null);
+  const handleBuyNft = async (badgeId: string)=>{
+    nftBadgeBuying.current = badgeId;
+    try{
+      await buyNftBadgeMutation.mutateAsync(badgeId);
+    }
+    catch(error){
+      console.error("Error buying NFT badge", error);
+    }
+  }
+
   return (
-    <Card className="p-6">
+    <Card className="p-6 max-h-[500px] overflow-y-auto">
       <div className="flex items-center gap-3 mb-4">
         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-cyan-500/20 flex items-center justify-center">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -34,8 +44,13 @@ export const SingleSales: React.FC<SingleSalesProps> = ({ listings, onBuy }) => 
         </div>
       </div>
 
-      <div className="space-y-2">
-        {listings.map((listing) => (
+      {listingsLoading ? (
+        <div className="flex items-center w-full h-full justify-center">
+          <Loader2 className="w-10 h-10 animate-spin" />
+        </div>
+      ) : (
+        <div className="space-y-2">
+        {activeListings?.map((listing) => (
           <div 
             key={listing.id}
             className="flex items-center justify-between p-4 bg-[#111111] rounded-xl"
@@ -48,23 +63,29 @@ export const SingleSales: React.FC<SingleSalesProps> = ({ listings, onBuy }) => 
                 </svg>
               </div>
               <div>
-                <p className="text-white font-medium">{listing.name}</p>
-                <p className={`text-xs ${listing.status === 'verified' ? 'text-emerald-400' : 'text-amber-400'}`}>
-                  {listing.seller}
+                <p className="text-white font-medium">Kols Pariticpation Badge #{listing.id}</p>
+                <p className={`text-xs text-gray-500`}>
+                  Seller: {(listing.seller.slice(0, 6) + "..." + listing.seller.slice(-4))}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               {listing.price > 0 ? (
-                <span className="text-purple-400 font-semibold">{listing.price} USDT</span>
+                <span className="text-[#00FFD1] font-semibold">{formatUnits(listing.price, 18)} USDT</span>
               ) : (
                 <span className="text-gray-500 text-sm">—</span>
               )}
             </div>
-            <Button onClick={() => onBuy(listing.id)}>Buy</Button>
+            <Button className=" disabled:opacity-50 disabled:cursor-not-allowed" onClick={() => handleBuyNft(listing.id)} disabled={buyNftBadgeMutation.isPending && nftBadgeBuying.current === listing.id}>
+              {buyNftBadgeMutation.isPending && nftBadgeBuying.current === listing.id ? 'Buying...' : 'Buy'}
+              {buyNftBadgeMutation.isPending && nftBadgeBuying.current === listing.id && (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              )}
+            </Button>
           </div>
         ))}
       </div>
+      )}
     </Card>
   )
 }

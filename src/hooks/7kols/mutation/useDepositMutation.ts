@@ -51,6 +51,7 @@ export const useDepositMutation = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['7kols-global-stats'] })
             queryClient.invalidateQueries({ queryKey: ['7kols-user'] })
+            queryClient.invalidateQueries({ queryKey: ['user-nft-data', connection.address] })
             toast.success('Deposit successful')
         },
         onError: (error: Error) => {

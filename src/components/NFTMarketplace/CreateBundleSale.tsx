@@ -1,25 +1,13 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Card, Button } from '../ui'
+import { useNftsHoldingQuery } from '@/hooks/nftbadge/queries/useNftsHoldingQuery'
+import type { NFTMetadata } from '@/types/NftMarketplace/nfttype'
+import { useCreateBundleMutation } from '@/hooks/nftbadge/mutations/useCreateBundleMutation'
+import useNftMarketPlaceStore from '@/store/nftMarketPlaceStore'
 
-interface NFTOption {
-  id: string
-  name: string
-  variant: string
-}
-
-interface CreateBundleSaleProps {
-  availableNFTs: NFTOption[]
-  onCreateBundle: (data: { name: string; price: number; nfts: string[]; discount: number }) => void
-}
-
-export const CreateBundleSale: React.FC<CreateBundleSaleProps> = ({ 
-  availableNFTs,
-  onCreateBundle 
-}) => {
-  const [bundleName, setBundleName] = useState('')
+export const CreateBundleSale: React.FC = () => {
   const [bundlePrice, setBundlePrice] = useState('')
   const [selectedNFTs, setSelectedNFTs] = useState<string[]>([])
-  const [discountPercentage, setDiscountPercentage] = useState('')
 
   const handleNFTToggle = (id: string) => {
     setSelectedNFTs(prev => 
@@ -29,21 +17,18 @@ export const CreateBundleSale: React.FC<CreateBundleSaleProps> = ({
     )
   }
 
+  const {data:userNftsHolding} = useNftsHoldingQuery();
+  const userNfts = useMemo(() => {
+    if(!userNftsHolding) return [];
+    return userNftsHolding as NFTMetadata[];
+  }, [userNftsHolding, selectedNFTs]);
+
+  const {mutate: createBundle, isPending: createBundleLoading} = useCreateBundleMutation();
+  const {message} = useNftMarketPlaceStore();
+
   const handleSubmit = () => {
-    onCreateBundle({
-      name: bundleName,
-      price: parseFloat(bundlePrice) || 0,
-      nfts: selectedNFTs,
-      discount: parseFloat(discountPercentage) || 0,
-    })
+    createBundle({nfts: selectedNFTs, price: parseFloat(bundlePrice)});
   }
-
-  const variantColors: Record<string, string> = {
-    Gold: 'bg-amber-500',
-    Silver: 'bg-slate-400',
-    Platinum: 'bg-purple-400',
-  }
-
   return (
     <Card className="p-6">
       <div className="flex items-center justify-between mb-6">
@@ -61,24 +46,43 @@ export const CreateBundleSale: React.FC<CreateBundleSaleProps> = ({
             <p className="text-gray-500 text-sm">Package multiple NFTs together with special pricing</p>
           </div>
         </div>
-        <Button onClick={handleSubmit}>
-          Create Bundle
-        </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div>
-          <label className="block text-gray-400 text-sm mb-2">Bundle Name</label>
-          <input
-            type="text"
-            value={bundleName}
-            onChange={(e) => setBundleName(e.target.value)}
-            placeholder="e.g., Elite Bundle"
-            className="w-full bg-[#111111] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-200"
-          />
+     
+
+      <div className="mb-6 max-h-[300px] overflow-y-auto">
+        <label className="block text-gray-400 text-sm mb-3">Select NFTs for Bundle</label>
+        <div className="space-y-2">
+          {userNfts.length === 0 && (
+            <div className="text-white text-sm">No NFTs found</div>
+          )}
+          {userNfts.map((nft) => (
+            <div 
+              key={nft.id}
+              onClick={() => handleNFTToggle(nft.id)}
+              className="flex items-center gap-3 p-3 bg-[#111111] rounded-xl cursor-pointer hover:bg-[#161616] transition-colors"
+            >
+              <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
+                selectedNFTs.includes(nft.id) 
+                  ? 'bg-[#00FFD1] border-[#00FFD1]' 
+                  : 'bg-gray-800 border-gray-600'
+              }`}>
+                {selectedNFTs.includes(nft.id) && (
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 5L4 7L8 3" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                )}
+              </div>
+              <span className="text-white text-sm">{nft.name}</span>
+              <span className="text-[#00FFD1] text-sm">#{nft.id}</span>
+            </div>
+          ))}
         </div>
+      </div>
+      <div className="grid grid-cols-1 gap-4 mb-6">
         <div>
           <label className="block text-gray-400 text-sm mb-2">Bundle Price (USDT)</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full"> 
           <input
             type="number"
             value={bundlePrice}
@@ -86,50 +90,19 @@ export const CreateBundleSale: React.FC<CreateBundleSaleProps> = ({
             placeholder="Enter total price"
             className="w-full bg-[#111111] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-200"
           />
-        </div>
-      </div>
-
-      <div className="mb-6">
-        <label className="block text-gray-400 text-sm mb-3">Select NFTs for Bundle</label>
-        <div className="space-y-2">
-          {availableNFTs.map((nft) => (
-            <label 
-              key={nft.id}
-              className="flex items-center gap-3 p-3 bg-[#111111] rounded-xl cursor-pointer hover:bg-[#161616] transition-colors"
-            >
-              <input
-                type="checkbox"
-                checked={selectedNFTs.includes(nft.id)}
-                onChange={() => handleNFTToggle(nft.id)}
-                className="w-4 h-4 rounded border-gray-600 bg-[#1a1a1a] text-cyan-500 focus:ring-cyan-500/30"
-              />
-              <span className={`w-3 h-3 rounded-full ${variantColors[nft.variant] || 'bg-gray-500'}`} />
-              <span className="text-white text-sm">{nft.name}</span>
-              <span className="text-gray-500 text-sm">- {nft.variant}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <div className="mb-6">
-        <label className="block text-gray-400 text-sm mb-2">Discount Percentage</label>
-        <input
-          type="number"
-          value={discountPercentage}
-          onChange={(e) => setDiscountPercentage(e.target.value)}
-          placeholder="e.g., 10"
-          className="w-full bg-[#111111] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-200"
-        />
-        <p className="text-gray-600 text-xs mt-2">Can increase up to 50 compared to individual sales</p>
-      </div>
-
-      <Button fullWidth onClick={handleSubmit} className="gap-2">
+           <Button disabled={createBundleLoading || userNfts.length < 2 || parseFloat(bundlePrice) <= 0} onClick={handleSubmit} className="gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
           <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
         </svg>
-        List for Sale
+          {createBundleLoading ? message : 'List Bundle For Sale'}
       </Button>
+      </div>
+        </div>
+       
+      </div>
+
+      
     </Card>
   )
 }

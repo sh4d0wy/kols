@@ -1,23 +1,39 @@
-import React from 'react'
+import React, { useMemo, useRef } from 'react'
 import { Card, Button } from '../ui'
+import { useGetActiveBundles } from '@/hooks/nftbadge/queries/useGetActiveBundles'
+import type { NFTBundle } from '@/types/NftMarketplace/nfttype'
+import { formatUnits } from 'ethers'
+import { Loader2 } from 'lucide-react'
+import useNftMarketPlaceStore from '@/store/nftMarketPlaceStore'
+import { useBuyBundleMutation } from '@/hooks/nftbadge/mutations/useBuyBundleMutation'
+import { useConnection } from 'wagmi'
 
-interface Bundle {
-  id: string
-  name: string
-  price: number
-  discount: number
-  count: number
-  type: 'elite' | 'starter'
-}
+export const BundleSales: React.FC= () => {
+  const {data: bundlesData, isLoading: bundlesLoading} = useGetActiveBundles();
+  const {buyBundleMessage} = useNftMarketPlaceStore();
+  const {mutateAsync: buyBundle, isPending: buyBundleLoading} = useBuyBundleMutation();
+  const bundleBuying = useRef<string | null>(null);
+  const connection = useConnection();
 
-interface BundleSalesProps {
-  bundles: Bundle[]
-  onBuy: (id: string) => void
-}
+  const activeBundles: NFTBundle[] = useMemo(() => {
+    console.log("bundlesData", bundlesData);
+    if(!bundlesData) return [];
+    return bundlesData?.filter((bundle) => bundle.active) as NFTBundle[];
+  }, [bundlesData]);
 
-export const BundleSales: React.FC<BundleSalesProps> = ({ bundles, onBuy }) => {
+  const handleBuyBundle = async (bundleId: string) => {
+    bundleBuying.current = bundleId;
+    try{
+      await buyBundle(bundleId);
+    }
+    catch(error){
+      console.error("Error buying bundle", error);
+    } finally {
+      bundleBuying.current = null;
+    }
+  }
   return (
-    <Card className="p-6">
+    <Card className="p-6 min-h-[300px] max-h-[500px] overflow-y-auto">
       <div className="flex items-center gap-3 mb-4">
         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -35,41 +51,36 @@ export const BundleSales: React.FC<BundleSalesProps> = ({ bundles, onBuy }) => {
           <p className="text-gray-500 text-sm">Purchase all KTB NFTs owned by your wallet using ERC721Enumerable link</p>
         </div>
       </div>
-
-      <div className="space-y-3">
-        {bundles.map((bundle) => (
+ 
+      <div className="space-y-3 h-full">
+        {bundlesLoading && (
+          <div className="flex items-center w-full h-[360px] justify-center">
+            <Loader2 className="w-10 h-10 animate-spin" />
+          </div>
+        )}
+        {!bundlesLoading && activeBundles.length === 0 && (
+          <div className="flex items-center w-full h-[360px] justify-center">
+            <p className="text-gray-500 text-lg">No active bundles</p>
+          </div>
+        )}
+        {!bundlesLoading && activeBundles.length > 0 && activeBundles.map((bundle) => (
           <div 
             key={bundle.id}
             className="flex items-center justify-between p-4 bg-[#111111] rounded-xl"
           >
             <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                bundle.type === 'elite' 
-                  ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20' 
-                  : 'bg-gradient-to-br from-cyan-500/20 to-blue-500/20'
-              }`}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke={bundle.type === 'elite' ? '#F59E0B' : '#00F5D4'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <p className="text-white font-medium">{bundle.name}</p>
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${
-                    bundle.type === 'elite'
-                      ? 'bg-amber-500/20 text-amber-400'
-                      : 'bg-cyan-500/20 text-[#00FFD1]'
-                  }`}>
-                    -{bundle.discount}% OFF
-                  </span>
+                  <p className="text-white font-medium">Bundle #{bundle.id}</p>
                 </div>
-                <p className="text-gray-500 text-xs">{bundle.count} for Bundle</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-[#00FFD1] font-semibold">{bundle.price} USDT</span>
+              <span className="text-[#00FFD1] font-semibold">{formatUnits(bundle.price, 18)} USDT</span>
             </div>
-            <Button onClick={() => onBuy(bundle.id)}>Buy</Button>
+            <Button onClick={() => handleBuyBundle(bundle.id)} disabled={(buyBundleLoading && bundleBuying.current === bundle.id) || bundle.seller === connection.address} className="gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+              {buyBundleLoading && bundleBuying.current === bundle.id ? buyBundleMessage : 'Buy'}
+            </Button>
           </div>
         ))}
       </div>

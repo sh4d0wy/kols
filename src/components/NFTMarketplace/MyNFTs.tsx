@@ -1,83 +1,33 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { Card, Button } from '../ui'
+import { useNftsHoldingQuery } from '@/hooks/nftbadge/queries/useNftsHoldingQuery'
+import type { NFTMetadata } from '@/types/NftMarketplace/nfttype'
+import { Loader2, ChevronDown } from 'lucide-react'
+import { useListSingleNftMutation } from '@/hooks/nftbadge/mutations/useListSingleNftMutation'
 
-interface NFT {
-  id: string
-  name: string
-  price: number
-  image: 'gold' | 'silver' | 'physical'
-  isNew?: boolean
-  tag?: string
-}
 
-interface MyNFTsProps {
-  nfts: NFT[]
-  onListForSale: (id: string) => void
-}
-
-const NFTCard: React.FC<{ nft: NFT; onListForSale: (id: string) => void }> = ({ nft, onListForSale }) => {
-  const renderBadgeImage = () => {
-    if (nft.image === 'gold') {
-      return (
-        <div className="w-full aspect-square bg-gradient-to-br from-amber-600/30 to-amber-900/30 rounded-xl flex items-center justify-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-400/10 to-transparent" />
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/30">
-            <div className="w-16 h-16 rounded-full border-2 border-amber-300/50 flex items-center justify-center">
-              <span className="text-amber-900 font-bold text-xs">NFT</span>
-            </div>
-          </div>
-        </div>
-      )
-    }
-    if (nft.image === 'silver') {
-      return (
-        <div className="w-full aspect-square bg-gradient-to-br from-slate-600/30 to-slate-900/30 rounded-xl flex items-center justify-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-400/10 to-transparent" />
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-slate-300 to-slate-500 flex items-center justify-center shadow-lg shadow-slate-500/30">
-            <div className="w-16 h-16 rounded-full border-2 border-slate-200/50 flex items-center justify-center">
-              <span className="text-slate-800 font-bold text-xs">NFT</span>
-            </div>
-          </div>
-        </div>
-      )
-    }
-    // Physical badge
+const NFTCard: React.FC<{ nft: NFTMetadata; onListForSale: () => void }> = ({ nft, onListForSale }) => {
+  const renderBadgeImage = (image: string) => {
     return (
-      <div className="w-full aspect-square bg-gradient-to-br from-gray-700/30 to-gray-900/30 rounded-xl flex items-center justify-center relative overflow-hidden">
-        <div className="w-24 h-28 bg-gradient-to-b from-gray-300 to-gray-500 rounded-lg flex flex-col items-center justify-center shadow-lg">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center mb-1">
-            <span className="text-white font-bold text-[10px]">NFT</span>
-          </div>
-          <span className="text-gray-800 text-[8px] font-bold uppercase tracking-wider">BADGE</span>
-        </div>
-      </div>
-    )
-  }
+    <div className="w-full aspect-square bg-gradient-to-br from-slate-600/30 to-slate-900/30 rounded-xl flex items-center justify-center relative overflow-hidden">
+      <img src={image} alt={nft.description} className="w-full h-full object-cover rounded-xl" />
+    </div>
+    )}
 
   return (
     <div className="bg-[#111111] rounded-xl p-3 relative">
-      {nft.isNew && (
-        <span className="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10">
-          new
-        </span>
-      )}
-      {nft.tag && (
-        <span className="absolute top-2 left-2 bg-cyan-500/20 text-[#00FFD1] text-[10px] font-medium px-2 py-0.5 rounded-full z-10">
-          {nft.tag}
-        </span>
-      )}
       
-      {renderBadgeImage()}
+      {renderBadgeImage(nft.image)}
       
       <div className="mt-3">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-white text-sm font-medium">{nft.name}</span>
-          <span className="text-[#00FFD1] font-semibold">{nft.price} USDT</span>
+        <div className="flex items-center justify-start mb-2">
+          <span className="text-white text-sm font-medium">{nft.name + " - "}</span>
+          <span className="text-[#00FFD1] text-lg">#{nft.id}</span>
         </div>
         <Button 
           size="sm" 
           fullWidth 
-          onClick={() => onListForSale(nft.id)}
+          onClick={onListForSale}
         >
           List for Sale
         </Button>
@@ -86,11 +36,34 @@ const NFTCard: React.FC<{ nft: NFT; onListForSale: (id: string) => void }> = ({ 
   )
 }
 
-export const MyNFTs: React.FC<MyNFTsProps> = ({ nfts, onListForSale }) => {
+export const MyNFTs: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'single' | 'create'>('single')
+  const {data: nftsHolding, isLoading: nftsHoldingLoading} = useNftsHoldingQuery()
+  
+  // Create listing state
+  const [selectedNftId, setSelectedNftId] = useState<string>('')
+  const [listingPrice, setListingPrice] = useState<string>('')
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  
+  const { mutate: listNft, isPending: isListingPending, message: listingMessage } = useListSingleNftMutation()
+  
+  const selectedNft = useMemo(() => {
+    if (!nftsHolding || !selectedNftId) return null
+    return nftsHolding.find((nft: NFTMetadata) => nft.id === selectedNftId)
+  }, [nftsHolding, selectedNftId])
+  
+  const handleListNft = () => {
+    if (!selectedNftId || !listingPrice) return
+    listNft({ tokenId: selectedNftId, price: parseFloat(listingPrice) }, {
+      onSuccess: () => {
+        setSelectedNftId('')
+        setListingPrice('')
+      }
+    })
+  }
 
   return (
-    <Card className="p-6">
+    <Card className="p-6 max-h-[1000px] overflow-y-auto">
       <div className="flex items-center gap-3 mb-4">
         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -129,13 +102,119 @@ export const MyNFTs: React.FC<MyNFTsProps> = ({ nfts, onListForSale }) => {
           ○ Create Listing
         </button>
       </div>
-
+      {activeTab === 'single' && (
+        <>
+        {nftsHoldingLoading && (
+        <div className="flex items-center w-full h-[calc(100%-200px)] justify-center">
+        <Loader2 className="w-10 h-10 animate-spin" />
+        </div>
+      )}
+        {!nftsHoldingLoading && nftsHolding?.length === 0 && (
+          <div className="flex items-center w-full h-[calc(100%-200px)] justify-center">
+            <p className="text-white text-lg">No NFTs found</p>
+          </div>
+        )}
       {/* NFT Grid */}
       <div className="grid grid-cols-2 gap-4">
-        {nfts.map((nft) => (
-          <NFTCard key={nft.id} nft={nft} onListForSale={onListForSale} />
+        
+        {nftsHolding?.map((nft) => (
+          <NFTCard key={nft.id} nft={nft} onListForSale={() => {}} />
         ))}
       </div>
+        </>
+      )}
+      {activeTab === 'create' && (
+        <>
+          {nftsHoldingLoading && (
+            <div className="flex items-center w-full h-[calc(100%-200px)] justify-center">
+              <Loader2 className="w-10 h-10 animate-spin" />
+            </div>
+          )}
+          {!nftsHoldingLoading && nftsHolding?.length === 0 && (
+            <div className="flex items-center w-full h-[calc(100%-200px)] justify-center">
+              <p className="text-white text-lg">No NFTs found</p>
+            </div>
+          )}
+          {!nftsHoldingLoading && nftsHolding && nftsHolding.length > 0 && (
+            <div className="space-y-4">
+              {/* NFT Dropdown */}
+              <div>
+                <label className="block text-gray-400 text-sm mb-2">Select NFT</label>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="w-full bg-[#111111] border border-[#2a2a2a] rounded-xl px-4 py-3 text-left flex items-center justify-between hover:border-cyan-500/50 transition-all duration-200"
+                  >
+                    {selectedNft ? (
+                      <div className="flex items-center gap-3">
+                        <img 
+                          src={selectedNft.image} 
+                          alt={selectedNft.name} 
+                          className="w-8 h-8 rounded-lg object-cover"
+                        />
+                        <span className="text-white">{selectedNft.name}</span>
+                        <span className="text-[#00FFD1]">#{selectedNft.id}</span>
+                      </div>
+                    ) : (
+                      <span className="text-gray-500">Select an NFT to list</span>
+                    )}
+                    <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  
+                  {isDropdownOpen && (
+                    <div className="absolute z-10 w-full mt-2 bg-[#111111] border border-[#2a2a2a] rounded-xl overflow-hidden max-h-[200px] overflow-y-auto">
+                      {nftsHolding.map((nft: NFTMetadata) => (
+                        <button
+                          key={nft.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedNftId(nft.id)
+                            setIsDropdownOpen(false)
+                          }}
+                          className={`w-full px-4 py-3 flex items-center gap-3 hover:bg-[#1a1a1a] transition-colors ${
+                            selectedNftId === nft.id ? 'bg-[#1a1a1a]' : ''
+                          }`}
+                        >
+                          <img 
+                            src={nft.image} 
+                            alt={nft.name} 
+                            className="w-8 h-8 rounded-lg object-cover"
+                          />
+                          <span className="text-white">{nft.name}</span>
+                          <span className="text-[#00FFD1]">#{nft.id}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Price Input */}
+              <div>
+                <label className="block text-gray-400 text-sm mb-2">Price (USDT)</label>
+                <input
+                  type="number"
+                  value={listingPrice}
+                  onChange={(e) => setListingPrice(e.target.value)}
+                  placeholder="Enter price"
+                  className="w-full bg-[#111111] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-200"
+                />
+              </div>
+              
+              {/* List Button */}
+              <Button
+                fullWidth
+                onClick={handleListNft}
+                disabled={isListingPending || !selectedNftId || !listingPrice || parseFloat(listingPrice) <= 0}
+                className="disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isListingPending ? listingMessage : 'List NFT For Sale'}
+              </Button>
+            </div>
+          )}
+        </>
+      )}
     </Card>
   )
 }
