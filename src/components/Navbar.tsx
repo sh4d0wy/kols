@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom"
-import { ConnectKitButton } from "connectkit"
+// import { ConnectKitButton } from "connectkit"
+import { ConnectWallet } from "./ConnectWalletButton"
 export const Navbar = ({ className }: { className?: string }) => {
     const location = useLocation()
     const navItems = [
@@ -56,7 +57,8 @@ export const Navbar = ({ className }: { className?: string }) => {
                     </Link>
                 ))}
             </div>
-                <ConnectKitButton 
+            <ConnectWallet />
+                {/* <ConnectKitButton 
                     customTheme={
                         {
                             "--ck-connectbutton-background": "linear-gradient(90deg, #00F5D4 0%, #7B61FF 100%)",
@@ -65,7 +67,7 @@ export const Navbar = ({ className }: { className?: string }) => {
                             "--ck-connectbutton-hover-background": "linear-gradient(90deg, #00F5D4 0%, #7B61FF 100%)",
                         }
                     }
-                 />
+                 /> */}
         </div>
     )
 }
