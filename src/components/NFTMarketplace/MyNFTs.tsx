@@ -157,8 +157,8 @@ export const MyNFTs: React.FC = () => {
             </div>
           )}
           {!nftsHoldingLoading && nftsHolding && nftsHolding.length > 0 && (
-            <div className="w-full h-[calc(100%-200px)] flex items-center justify-center">
-            <div className="space-y-10 w-full border border-[#2a2a2a] rounded-xl p-8">
+            <div className="w-full h-[50%] flex items-start justify-center mt-2">
+            <div className="space-y-5 w-full border border-[#2a2a2a] rounded-xl p-8">
               {/* NFT Dropdown */}
               <div>
                 <label className="block text-white text-sm mb-2">Select NFT</label>

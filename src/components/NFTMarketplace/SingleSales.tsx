@@ -5,11 +5,13 @@ import { Loader2 } from 'lucide-react'
 import { formatUnits } from 'ethers'
 import type { NFTListing } from '@/types/NftMarketplace/nfttype'
 import { useBuyNftBadge } from '@/hooks/nftbadge/mutations/useBuyNftBadge'
+import { useConnection } from 'wagmi'
 
 
 export const SingleSales: React.FC = () => {
   const {data: listingsData, isLoading: listingsLoading} = useGetSingleListings();
   const buyNftBadgeMutation = useBuyNftBadge();
+  const connection = useConnection();
   const activeListings: NFTListing[] = useMemo(() => {
     return listingsData?.filter((listing) => listing.active) as NFTListing[];
   }, [listingsData]);
@@ -48,6 +50,10 @@ export const SingleSales: React.FC = () => {
         <div className="flex items-center w-full h-[360px] justify-center">
           <Loader2 className="w-10 h-10 animate-spin" />
         </div>
+      ) : activeListings?.length === 0 ? (
+        <div className="flex items-center w-full h-[360px] justify-center">
+          <p className="text-gray-500 text-lg">No active listings found</p>
+        </div>
       ) : 
       activeListings?.length > 0 ? (
         <div className="space-y-2">
@@ -64,8 +70,8 @@ export const SingleSales: React.FC = () => {
                 </svg>
               </div>
               <div>
-                <p className="text-white font-medium">Kols Pariticpation Badge #{listing.id}</p>
-                <p className={`text-xs text-gray-500`}>
+                <p className="text-white text-lg font-medium">Kols Pariticpation Badge #{listing.id}</p>
+                <p className={`text-md text-[#00FFD1]`}>
                   Seller: {(listing.seller.slice(0, 6) + "..." + listing.seller.slice(-4))}
                 </p>
               </div>
@@ -77,7 +83,7 @@ export const SingleSales: React.FC = () => {
                 <span className="text-gray-500 text-sm">—</span>
               )}
             </div>
-            <Button className=" disabled:opacity-50 disabled:cursor-not-allowed" onClick={() => handleBuyNft(listing.id)} disabled={buyNftBadgeMutation.isPending && nftBadgeBuying.current === listing.id}>
+            <Button className=" disabled:opacity-50 disabled:cursor-not-allowed" onClick={() => handleBuyNft(listing.id)} disabled={(buyNftBadgeMutation.isPending && nftBadgeBuying.current === listing.id) || listing.seller === connection.address}>
               {buyNftBadgeMutation.isPending && nftBadgeBuying.current === listing.id ? 'Buying...' : 'Buy'}
               {buyNftBadgeMutation.isPending && nftBadgeBuying.current === listing.id && (
                 <Loader2 className="w-4 h-4 animate-spin" />

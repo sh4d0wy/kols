@@ -79,7 +79,7 @@ export const BundleSales: React.FC= () => {
               </div>
                 <div className="flex flex-col">
                   <p className="text-white text-lg font-medium">Bundle #{bundle.id}</p>
-                  <p className="text-gray-500 text-md">({bundle.nfts.length} NFTs)</p>
+                  <p className="text-[#00FFD1] text-md">({bundle.nfts.length} NFTs)</p>
                 </div>
               </div>
             </div>

@@ -31,9 +31,15 @@ export const useBuyNftBadge = () => {
                 const tx = await writeUsdtContract?.approve(NFT_MARKETPLACE_CONTRACT_ADDRESS, listingData.price);
                 await tx.wait();
             }
-            const tx = await writeMarketplaceContract.buyBadge(parseInt(badgeId));
-            await tx.wait();
-            return tx;        
+            try{
+                const tx = await writeMarketplaceContract.buyBadge(parseInt(badgeId));
+                await tx.wait();
+                return tx;
+            }
+            catch(error){
+                console.error("Error buying NFT badge", error);
+                throw new Error('Failed to buy NFT badge');
+            }
     }, [writeMarketplaceContract, connection.address]);
 
     return useMutation({
