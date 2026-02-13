@@ -40,15 +40,16 @@ export const SingleSales: React.FC = () => {
             Single Sales
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           </h3>
-          <p className="text-gray-500 text-sm">Purchase all KTB NFTs owned by your wallet using ERC721Enumerable</p>
+          <p className="text-gray-500 text-sm">Purchase all Kols Participation Badges for sale</p>
         </div>
       </div>
 
       {listingsLoading ? (
-        <div className="flex items-center w-full h-full justify-center">
+        <div className="flex items-center w-full h-[360px] justify-center">
           <Loader2 className="w-10 h-10 animate-spin" />
         </div>
-      ) : (
+      ) : 
+      activeListings?.length > 0 ? (
         <div className="space-y-2">
         {activeListings?.map((listing) => (
           <div 
@@ -85,6 +86,10 @@ export const SingleSales: React.FC = () => {
           </div>
         ))}
       </div>
+      ) : activeListings?.length === 0 && (
+        <div className="flex items-center w-full h-[360px] justify-center">
+          <p className="text-gray-500 text-lg">No active listings found</p>
+        </div>
       )}
     </Card>
   )

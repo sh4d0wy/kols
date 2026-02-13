@@ -17,4 +17,5 @@ export interface NFTBundle {
     seller: string;
     price: number;
     active: boolean;
+    nfts: string[];
 }

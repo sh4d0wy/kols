@@ -23,8 +23,14 @@ export const useGetActiveBundles = () => {
                         seller: bundle.seller,
                         price: bundle.price,
                         active: bundle.active,
+                        nfts: [],
                     });
                 }
+            }
+            for(let i = 0; i < bundles.length; i++){
+                const bundle = bundles[i];
+                const nfts = await readMarketplaceContract.getBundleTokenIds(Number(bundle.id));
+                bundles[i].nfts = [...nfts];
             }
             return bundles;
         }

@@ -48,7 +48,7 @@ export const BundleSales: React.FC= () => {
             Bundle Sales
             <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
           </h3>
-          <p className="text-gray-500 text-sm">Purchase all KTB NFTs owned by your wallet using ERC721Enumerable link</p>
+          <p className="text-gray-500 text-sm">Purchase all Kols Participation Badges for sale</p>
         </div>
       </div>
  
@@ -68,10 +68,18 @@ export const BundleSales: React.FC= () => {
             key={bundle.id}
             className="flex items-center justify-between p-4 bg-[#111111] rounded-xl"
           >
+            
             <div className="flex items-center gap-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <p className="text-white font-medium">Bundle #{bundle.id}</p>
+              <div className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20.59 13.41L13.42 20.58C13.2343 20.766 13.0137 20.9135 12.7709 21.0141C12.5281 21.1148 12.2678 21.1666 12.005 21.1666C11.7422 21.1666 11.4819 21.1148 11.2391 21.0141C10.9963 20.9135 10.7757 20.766 10.59 20.58L2 12V2H12L20.59 10.59C20.9625 10.9647 21.1716 11.4716 21.1716 12C21.1716 12.5284 20.9625 13.0353 20.59 13.41Z" stroke="#00F5D4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M7 7H7.01" stroke="#00F5D4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+                <div className="flex flex-col">
+                  <p className="text-white text-lg font-medium">Bundle #{bundle.id}</p>
+                  <p className="text-gray-500 text-md">({bundle.nfts.length} NFTs)</p>
                 </div>
               </div>
             </div>
